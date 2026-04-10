@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Markdown → Word Converter</title>
+  <script src="https://cdn.jsdelivr.net/npm/showdown@2.1.0/dist/showdown.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+    }
+    .wrapper {
+      background: #fff;
+      border-radius: 12px;
+      padding: 25px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    }
+    h1 { 
+      text-align: center; 
+      color: #333; 
+      margin-bottom: 20px;
+      font-size: 1.8rem;
+    }
+    .container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+    @media (max-width: 1000px) {
+      .container { grid-template-columns: 1fr; }
+    }
+    .panel {
+      background: #fafafa;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+    }
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #eee;
+    }
+    .panel h3 { 
+      margin: 0; 
+      color: #555; 
+      font-size: 1.1rem;
+    }
+    .char-count {
+      font-size: 12px;
+      color: #888;
+    }
+    textarea, #preview {
+      width: 100%;
+      min-height: 500px;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 14px;
+      line-height: 1.5;
+      resize: vertical;
+      flex: 1;
+    }
+    textarea:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    #preview {
+      overflow-y: auto;
+      background: #fff;
+      font-family: Calibri, Arial, sans-serif;
+      font-size: 11pt;
+      line-height: 1.15;
+    }
+    /* Стили для предпросмотра */
+    #preview h1, #preview h2, #preview h3, 
+    #preview h4, #preview h5, #preview h6 {
+      margin: 0.8em 0 0.4em;
+      color: #333;
+    }
+    #preview h1 { font-size: 2em; border-bottom: 2px solid #667eea; padding-bottom: 0.3em; }
+    #preview h2 { font-size: 1.5em; border-bottom: 1px solid #ddd; padding-bottom: 0.3em; }
+    #preview p { margin: 0.5em 0; }
+    #preview ul, #preview ol { 
+      margin: 0.5em 0; 
+      padding-left: 2em; 
+    }
+    #preview li { margin: 0.3em 0; }
+    #preview pre {
+      background: #f6f8fa;
+      padding: 12px;
+      border-radius: 6px;
+      overflow-x: auto;
+      border: 1px solid #ddd;
+      margin: 10px 0;
+    }
+    #preview code {
+      background: #f0f0f0;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-family: 'Consolas', monospace;
+      font-size: 0.95em;
+    }
+    #preview pre code {
+      background: none;
+      padding: 0;
+    }
+    #preview table {
+      border-collapse: collapse;
+      width: 100%;
+      margin: 10px 0;
+    }
+    #preview th, #preview td {
+      border: 1px solid #ddd;
+      padding: 8px 12px;
+      text-align: left;
+    }
+    #preview th { 
+      background: #f5f5f5; 
+      font-weight: 600;
+    }
+    #preview blockquote {
+      border-left: 4px solid #667eea;
+      margin: 1em 0;
+      padding: 0.5em 1em;
+      background: #f9f9ff;
+      color: #555;
+    }
+    #preview a {
+      color: #0366d6;
+      text-decoration: none;
+    }
+    #preview a:hover { text-decoration: underline; }
+    #preview img { max-width: 100%; height: auto; }
+    #preview hr {
+      border: none;
+      border-top: 2px solid #eee;
+      margin: 1.5em 0;
+    }
+    
+    .controls {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin: 20px 0;
+      padding: 15px;
+      background: #f8f9fa;
+      border-radius: 8px;
+    }
+    button {
+      padding: 12px 24px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    button:hover:not(:disabled) { 
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+    }
+    button.secondary { 
+      background: #6c757d;
+    }
+    button.secondary:hover:not(:disabled) { 
+      background: #545b62;
+      box-shadow: 0 4px 12px rgba(108, 117, 125, 0.4);
+    }
+    button.success {
+      background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    }
+    button.success:hover:not(:disabled) {
+      box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
+    }
+    
+    .status {
+      text-align: center;
+      padding: 12px 20px;
+      border-radius: 8px;
+      margin: 15px 0;
+      font-weight: 500;
+      display: none;
+      animation: slideIn 0.3s ease;
+    }
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .status.success { 
+      background: #d4edda; 
+      color: #155724; 
+      border: 1px solid #c3e6cb;
+      display: block; 
+    }
+    .status.error { 
+      background: #f8d7da; 
+      color: #721c24; 
+      border: 1px solid #f5c6cb;
+      display: block; 
+    }
+    .status.info {
+      background: #cce5ff;
+      color: #004085;
+      border: 1px solid #b8daff;
+      display: block;
+    }
+    
+    .hint {
+      font-size: 13px;
+      color: #666;
+      text-align: center;
+      padding: 12px;
+      background: #f8f9fa;
+      border-radius: 6px;
+      border-left: 4px solid #667eea;
+    }
+    
+    .footer {
+      text-align: center;
+      margin-top: 20px;
+      padding-top: 15px;
+      border-top: 1px solid #eee;
+      color: #888;
+      font-size: 12px;
+    }
+    
+    /* Стили для вложенных списков в предпросмотре */
+    #preview ul ul, #preview ol ol, 
+    #preview ul ol, #preview ol ul {
+      margin: 0.2em 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <h1>📝 Markdown → Word Converter</h1>
+    
+    <div class="controls">
+      <button id="loadMdBtn" class="secondary">📂 Загрузить Markdown</button>
+      <button id="convertBtn" class="success">🔄 Конвертировать</button>
+      <button id="copyBtn" disabled>📋 Копировать DOC в буфер</button>
+      <button id="copyHtmlBtn" class="secondary" disabled>📄 Копировать HTML в буфер</button>
+      <button id="downloadBtn" class="secondary" disabled>💾 Скачать как HTML</button>
+      <button id="clearBtn" class="secondary">🗑️ Очистить</button>
+    </div>
+    
+    <div id="status" class="status"></div>
+    
+    <div class="container">
+      <div class="panel">
+        <div class="panel-header">
+          <h3>📥 Markdown (ввод)</h3>
+          <span class="char-count" id="charCount">0 символов</span>
+        </div>
+        <textarea id="markdownInput" placeholder="Введите ваш Markdown здесь..."></textarea>
+      </div>
+      <div class="panel">
+        <div class="panel-header">
+          <h3>👁️ Предпросмотр (как будет в Word)</h3>
+          <span class="char-count" id="wordCount">0 слов</span>
+        </div>
+        <div id="preview"></div>
+      </div>
+    </div>
+    
+    <div class="hint">
+      💡 <strong>Инструкция:</strong> После конвертации нажмите «Копировать DOC в буфер обмена», 
+      затем вставьте в Microsoft Word (Ctrl+V). Форматирование, списки и таблицы сохранятся.
+    </div>
+    
+    <div class="footer">
+      Работает полностью локально в вашем браузере • Данные не отправляются на сервер
+    </div>
+  </div>
+
+  <script>
+    // ===== Инициализация =====
+    const converter = new showdown.Converter({
+      tables: true,
+      tasklists: true,
+      strikethrough: true,
+      ghCodeBlocks: true,
+      simpleLineBreaks: true,
+      parseImgDimensions: true,
+      headerLevelStart: 1,
+      simplifiedAutoLink: true,
+      excludeTrailingPunctuationFromURLs: true,
+      literalMidWordUnderscores: true,
+      completeHTMLDocument: false,
+      disableForced4SpacesIndentedSublists: true
+    });
+
+    // DOM элементы
+    const els = {
+      input: document.getElementById('markdownInput'),
+      preview: document.getElementById('preview'),
+      convertBtn: document.getElementById('convertBtn'),
+      copyBtn: document.getElementById('copyBtn'),
+      copyHtmlBtn: document.getElementById('copyHtmlBtn'),
+      downloadBtn: document.getElementById('downloadBtn'),
+      loadMdBtn: document.getElementById('loadMdBtn'),
+      clearBtn: document.getElementById('clearBtn'),
+      status: document.getElementById('status'),
+      charCount: document.getElementById('charCount'),
+      wordCount: document.getElementById('wordCount')
+    };
+
+    // Пример с многоуровневыми списками (4+ уровня)
+    const defaultExample = `# Отчёт по проекту
+
+## 📋 Введение
+Это **пример конвертации** Markdown в формат, совместимый с *Microsoft Word*.
+
+### Основные возможности:
+- ✅ Конвертация заголовков всех уровней
+- ✅ **Жирный текст**, *курсив*, ***жирный курсив***
+- ✅ ~~Зачёркнутый текст~~ и \`инлайн-код\`
+- ✅ [Ссылки](https://example.com) и изображения
+- ✅ Таблицы и цитаты
+
+## 🔢 Многоуровневые списки
+
+### Пример вложенного списка (4 уровня):
+
+1. **Стратегический анализ**
+    1. Исследование рынка
+        1. Анализ конкурентов
+            1. Сравнение ценовых моделей
+            2. Оценка доли рынка
+        2. Опросы фокус-групп
+    2. SWOT-анализ
+2. **Проектирование системы**
+    1. Архитектура БД
+        1. Схема сущностей (ERD)
+            1. Описание связей "один ко многим"
+            2. Индексация таблиц
+
+### Смешанные списки:
+
+- Задача 1
+  - [ ] Подзадача 1.1
+  - [x] Подзадача 1.2 (выполнено)
+    - [ ] Деталь 1.2.1
+    - [ ] Деталь 1.2.2
+- Задача 2
+  1. Этап 2.1
+  2. Этап 2.2
+     - Подэтап 2.2.1
+     - Подэтап 2.2.2
+
+## 📊 Таблица данных
+
+| Приоритет | Задача | Статус | Исполнитель |
+|-----------|--------|--------|-------------|
+| 🔴 Высокий | Исправить баги | В работе | Иван |
+| 🟡 Средний | Добавить тесты | Ожидает | Мария |
+| 🟢 Низкий | Обновить документацию | Готово | Алексей |
+
+## 💻 Блок кода
+
+\`\`\`javascript
+// Пример функции с вложенными условиями
+function processData(data) {
+  if (data && data.items) {
+    return data.items
+      .filter(item => item.active)
+      .map(item => ({
+        id: item.id,
+        name: item.name.toUpperCase(),
+        // Вложенный объект
+        meta: {
+          created: new Date(item.timestamp),
+          tags: item.tags || []
+        }
+      }));
+  }
+  return [];
+}
+\`\`\`
+
+## 📝 Цитата
+
+> Это пример цитаты в Markdown.
+> 
+> > Вложенная цитата для демонстрации.
+> > 
+> > > Третий уровень вложенности цитат.
+> 
+> Возврат на второй уровень.
+
+## 🎯 Заключение
+
+1. Этот документ демонстрирует возможности конвертации
+2. Все элементы сохранят форматирование в Word
+3. Просто скопируйте и вставьте!
+
+---
+*Сгенерировано локально • [markdown2word converter](https://github.com)*
+`;
+
+    // ===== Функции =====
+
+    // Загрузка Markdown из файла
+    function loadMarkdownFile() {
+      // Создаём невидимый input типа file
+      const fileInput = document.createElement('input');
+      fileInput.type = 'file';
+      fileInput.accept = '.md,.markdown,.txt';
+      fileInput.style.display = 'none';
+      
+      fileInput.addEventListener('change', (event) => {
+        const file = event.target.files[0];
+        if (!file) {
+          showStatus('❌ Файл не выбран', 'error');
+          return;
+        }
+        
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const content = e.target.result;
+          els.input.value = content;
+          updateStats();
+          convertMarkdown();
+          showStatus('📂 Файл загружен: ' + file.name, 'success');
+        };
+        reader.onerror = () => {
+          showStatus('❌ Ошибка чтения файла', 'error');
+        };
+        reader.readAsText(file, 'UTF-8');
+      });
+      
+      document.body.appendChild(fileInput);
+      fileInput.click();
+      document.body.removeChild(fileInput);
+    }
+
+    // Конвертация Markdown → HTML с Word-совместимыми стилями
+    function convertMarkdown() {
+      try {
+        const md = els.input.value;
+        let html = converter.makeHtml(md);
+
+        // Просто берём чистый HTML от showdown, без дополнительных стилей
+        els.preview.innerHTML = html;
+        updateStats();
+        els.copyBtn.disabled = false;
+        els.copyHtmlBtn.disabled = false;
+        els.downloadBtn.disabled = false;
+        showStatus('✅ Конвертация завершена', 'success');
+        return html;
+      } catch (err) {
+        console.error('Conversion error:', err);
+        showStatus('❌ Ошибка конвертации: ' + err.message, 'error');
+        return '';
+      }
+    }
+
+    // Обновление счётчиков
+    function updateStats() {
+      const text = els.input.value;
+      els.charCount.textContent = `${text.length} символов`;
+      
+      const words = text.trim().split(/\s+/).filter(w => w.length > 0).length;
+      els.wordCount.textContent = `${words} слов`;
+    }
+
+    // Создание буфера в формате CF_HTML для Word
+    function createCF_HTML(htmlContent) {
+      // Базовый фрагмент для вставки
+      const fragment = htmlContent.trim();
+      
+      // Маркеры фрагмента
+      const startFrag = '<!--StartFragment-->';
+      const endFrag = '<!--EndFragment-->';
+      
+      // Полный HTML документ
+      const fullDoc = `<html>\r\n<body>\r\n${startFrag}\r\n${fragment}\r\n${endFrag}\r\n</body>\r\n</html>`;
+      
+      // Подсчёт байтов в UTF-8
+      const encoder = new TextEncoder();
+      const fullBytes = encoder.encode(fullDoc);
+      const startFragBytes = encoder.encode(startFrag);
+      const endFragBytes = encoder.encode(endFrag);
+      
+      // Поиск позиций маркеров
+      let startFragIdx = -1, endFragIdx = -1;
+      
+      for (let i = 0; i < fullBytes.length - startFragBytes.length; i++) {
+        if (fullBytes.slice(i, i + startFragBytes.length).every((b, j) => b === startFragBytes[j])) {
+          startFragIdx = i + startFragBytes.length;
+          break;
+        }
+      }
+      
+      for (let i = 0; i < fullBytes.length - endFragBytes.length; i++) {
+        if (fullBytes.slice(i, i + endFragBytes.length).every((b, j) => b === endFragBytes[j])) {
+          // EndFragment должен указывать на позицию ПОСЛЕ закрывающего маркера
+          endFragIdx = i + endFragBytes.length;
+          break;
+        }
+      }
+      
+      // Заголовок с временными значениями
+      const headerTemplate = [
+        'Version:1.0',
+        'StartHTML:##########',
+        'EndHTML:##########',
+        'StartFragment:##########',
+        'EndFragment:##########',
+        '',
+        ''
+      ].join('\r\n');
+      
+      const headerBytes = encoder.encode(headerTemplate);
+      
+      // Расчёт реальных смещений
+      const startHTML = headerBytes.length;
+      const endHTML = headerBytes.length + fullBytes.length;
+      const startFragment = headerBytes.length + startFragIdx;
+      const endFragment = headerBytes.length + endFragIdx;
+      
+      // Финальный заголовок с правильными смещениями
+      const finalHeader = [
+        'Version:1.0',
+        'StartHTML:' + String(startHTML).padStart(10, '0'),
+        'EndHTML:' + String(endHTML).padStart(10, '0'),
+        'StartFragment:' + String(startFragment).padStart(10, '0'),
+        'EndFragment:' + String(endFragment).padStart(10, '0'),
+        '',
+        ''
+      ].join('\r\n');
+      
+      // Отладка: вывести смещения в консоль
+      console.log('CF_HTML offsets:', { startHTML, endHTML, startFragment, endFragment });
+      console.log('Header length:', headerBytes.length);
+      console.log('FullDoc length:', fullBytes.length);
+      
+      return finalHeader + fullDoc;
+    }
+
+    // Копирование в буфер обмена
+    async function copyToClipboard() {
+      try {
+        const htmlForClipboard = createCF_HTML(els.preview.innerHTML);
+        
+        // Создаём ClipboardItem с поддержкой HTML и plain text
+        const clipboardItem = new ClipboardItem({
+          'text/html': new Blob([htmlForClipboard], { type: 'text/html' }),
+          'text/plain': new Blob([els.input.value], { type: 'text/plain' })
+        });
+        
+        await navigator.clipboard.write([clipboardItem]);
+        showStatus('📋 Скопировано! Вставьте в Word (Ctrl+V)', 'success');
+        
+        // Визуальный эффект
+        const btn = els.copyBtn;
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '✅ Скопировано!';
+        setTimeout(() => btn.innerHTML = originalText, 2000);
+        
+      } catch (err) {
+        console.error('Clipboard API error:', err);
+        fallbackCopy(els.preview.innerHTML);
+      }
+    }
+
+    // Копирование HTML в буфер обмена (чистый HTML)
+    async function copyHtmlToClipboard() {
+      try {
+        const htmlContent = els.preview.innerHTML;
+        
+        // Создаём ClipboardItem с HTML и plain text
+        const clipboardItem = new ClipboardItem({
+          'text/html': new Blob([htmlContent], { type: 'text/html' }),
+          'text/plain': new Blob([htmlContent], { type: 'text/plain' })
+        });
+        
+        await navigator.clipboard.write([clipboardItem]);
+        showStatus('📄 HTML скопирован в буфер обмена', 'success');
+        
+        // Визуальный эффект
+        const btn = els.copyHtmlBtn;
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '✅ Скопировано!';
+        setTimeout(() => btn.innerHTML = originalText, 2000);
+        
+      } catch (err) {
+        console.error('Clipboard API error:', err);
+        // Fallback для HTML копирования
+        fallbackCopyHtml(els.preview.innerHTML);
+      }
+    }
+
+    // Fallback для копирования HTML (старые браузеры)
+    function fallbackCopyHtml(html) {
+      // Создаём невидимый редактируемый элемент
+      const temp = document.createElement('div');
+      temp.contentEditable = 'true';
+      temp.innerHTML = html;
+      temp.style.cssText = 'position:fixed;left:-9999px;top:0;';
+      document.body.appendChild(temp);
+      
+      // Выделяем содержимое
+      const range = document.createRange();
+      range.selectNodeContents(temp);
+      const sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+      
+      try {
+        document.execCommand('copy');
+        showStatus('📄 HTML скопирован (совместимый режим)', 'success');
+      } catch (e) {
+        showStatus('❌ Не удалось скопировать HTML. Попробуйте выделить текст вручную.', 'error');
+      } finally {
+        document.body.removeChild(temp);
+        sel.removeAllRanges();
+      }
+    }
+
+    // Fallback для старых браузеров
+    function fallbackCopy(html) {
+      // Создаём невидимый редактируемый элемент
+      const temp = document.createElement('div');
+      temp.contentEditable = 'true';
+      temp.innerHTML = html;
+      temp.style.cssText = 'position:fixed;left:-9999px;top:0;';
+      document.body.appendChild(temp);
+      
+      // Выделяем содержимое
+      const range = document.createRange();
+      range.selectNodeContents(temp);
+      const sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+      
+      try {
+        document.execCommand('copy');
+        showStatus('📋 Скопировано (совместимый режим)! Вставьте в Word', 'success');
+      } catch (e) {
+        showStatus('❌ Не удалось скопировать. Попробуйте выделить текст вручную.', 'error');
+      } finally {
+        document.body.removeChild(temp);
+        sel.removeAllRanges();
+      }
+    }
+
+    // Скачивание как HTML файл
+    function downloadHtml() {
+      const fullHtml = `<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>Document</title>
+<style>
+  body { font-family: Calibri, Arial, sans-serif; font-size: 11pt; line-height: 1.15; }
+  h1 { font-size: 24pt; margin: 12pt 0 6pt 0; }
+  h2 { font-size: 18pt; margin: 10pt 0 5pt 0; }
+  p { margin: 0 0 8pt 0; }
+  ul, ol { margin: 6pt 0; padding-left: 24pt; }
+  li { margin: 3pt 0; }
+  table { border-collapse: collapse; width: 100%; }
+  th, td { border: 1pt solid #ddd; padding: 6pt 10pt; }
+  th { background: #f5f5f5; }
+  pre { background: #f8f9fa; padding: 10pt; border-radius: 4pt; overflow-x: auto; }
+  code { background: #f0f0f0; padding: 2pt 5pt; border-radius: 3pt; }
+  blockquote { margin: 10pt 0; padding: 8pt 16pt; border-left: 4pt solid #667eea; background: #f9f9ff; }
+  a { color: #0563c1; text-decoration: none; }
+</style>
+</head>
+<body>
+${els.preview.innerHTML}
+</body>
+</html>`;
+      
+      const blob = new Blob([fullHtml], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'document_' + new Date().toISOString().slice(0,10) + '.html';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      
+      showStatus('💾 Файл скачан', 'success');
+    }
+
+    // Очистка
+    function clearAll() {
+      els.input.value = '';
+      els.preview.innerHTML = '';
+      els.copyBtn.disabled = true;
+      els.copyHtmlBtn.disabled = true;
+      els.downloadBtn.disabled = true;
+      updateStats();
+      showStatus('🗑️ Очищено', 'info');
+    }
+
+    // Показ статуса
+    function showStatus(message, type) {
+      els.status.textContent = message;
+      els.status.className = `status ${type}`;
+      
+      // Автоскрытие через 4 секунды
+      setTimeout(() => {
+        if (els.status.textContent === message) {
+          els.status.style.display = 'none';
+        }
+      }, 4000);
+    }
+
+    // ===== Обработчики событий =====
+    
+    // Загрузка Markdown файла
+    els.loadMdBtn.addEventListener('click', loadMarkdownFile);
+    
+    // Конвертация по кнопке
+    els.convertBtn.addEventListener('click', convertMarkdown);
+    
+    // Копирование
+    els.copyBtn.addEventListener('click', copyToClipboard);
+    
+    // Копирование HTML
+    els.copyHtmlBtn.addEventListener('click', copyHtmlToClipboard);
+    
+    // Скачивание
+    els.downloadBtn.addEventListener('click', downloadHtml);
+    
+    // Очистка
+    els.clearBtn.addEventListener('click', clearAll);
+    
+    // Автоконвертация при вводе (с дебаунсом)
+    let debounceTimer;
+    els.input.addEventListener('input', () => {
+      updateStats();
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => {
+        convertMarkdown();
+      }, 300);
+    });
+    
+    // ===== Инициализация при загрузке =====
+    window.addEventListener('DOMContentLoaded', () => {
+      // Загружаем пример
+      els.input.value = defaultExample;
+      
+      // Конвертируем сразу
+      convertMarkdown();
+      
+      // Показываем приветственное сообщение
+      showStatus('🎉 Пример загружен! Нажмите "Копировать" для вставки в Word', 'info');
+    });
+  </script>
+</body>
+</html>
