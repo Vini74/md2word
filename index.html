@@ -282,7 +282,13 @@
       <div class="panel">
         <div class="panel-header">
           <h3>👁️ Предпросмотр (как будет в Word)</h3>
-          <span class="char-count" id="wordCount">0 слов</span>
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <label style="display: flex; align-items: center; gap: 4px; font-size: 13px; cursor: pointer;">
+              <input type="checkbox" id="styleToggle" style="cursor: pointer;">
+              <span>📊 Стили для Word</span>
+            </label>
+            <span class="char-count" id="wordCount">0 слов</span>
+          </div>
         </div>
         <div id="preview"></div>
       </div>
@@ -325,6 +331,7 @@
       downloadBtn: document.getElementById('downloadBtn'),
       loadMdBtn: document.getElementById('loadMdBtn'),
       clearBtn: document.getElementById('clearBtn'),
+      styleToggle: document.getElementById('styleToggle'),
       status: document.getElementById('status'),
       charCount: document.getElementById('charCount'),
       wordCount: document.getElementById('wordCount')
@@ -406,11 +413,11 @@ function processData(data) {
 ## 📝 Цитата
 
 > Это пример цитаты в Markdown.
-> 
+>
 > > Вложенная цитата для демонстрации.
-> > 
+> >
 > > > Третий уровень вложенности цитат.
-> 
+>
 > Возврат на второй уровень.
 
 ## 🎯 Заключение
@@ -465,6 +472,11 @@ function processData(data) {
         const md = els.input.value;
         let html = converter.makeHtml(md);
 
+        // Если включена опция - добавляем стили для Word
+        if (els.styleToggle.checked) {
+          html = applyWordStyles(html);
+        }
+
         // Просто берём чистый HTML от showdown, без дополнительных стилей
         els.preview.innerHTML = html;
         updateStats();
@@ -480,6 +492,128 @@ function processData(data) {
       }
     }
 
+    // Применение стилей для совместимости с Word
+    function applyWordStyles(html) {
+      // Создаём временный DOM-элемент для обработки
+      const temp = document.createElement('div');
+      temp.innerHTML = html;
+
+      // Стилизуем таблицы
+      const tables = temp.querySelectorAll('table');
+      tables.forEach(table => {
+        table.style.borderCollapse = 'collapse';
+        table.style.width = '100%';
+        table.style.marginBottom = '10pt';
+        
+        // Ячейки заголовков
+        const ths = table.querySelectorAll('th');
+        ths.forEach(th => {
+          th.style.border = '1pt solid #000000';
+          th.style.padding = '6pt 8pt';
+          th.style.backgroundColor = '#f2f2f2';
+          th.style.fontWeight = 'bold';
+        });
+
+        // Обычные ячейки
+        const tds = table.querySelectorAll('td');
+        tds.forEach(td => {
+          td.style.border = '1pt solid #000000';
+          td.style.padding = '6pt 8pt';
+        });
+      });
+
+      // Преобразуем цитаты для Word (вместо вложенных blockquote используем таблицы с отступами)
+      function convertBlockquotesForWord(container) {
+        // Собираем все blockquote и сортируем по глубине (сначала внутренние)
+        const allBlockquotes = Array.from(container.querySelectorAll('blockquote'));
+        const sorted = allBlockquotes.sort((a, b) => {
+          const depthA = countBlockquoteParents(a);
+          const depthB = countBlockquoteParents(b);
+          return depthB - depthA;
+        });
+
+        function countBlockquoteParents(el) {
+          let count = 0;
+          let parent = el.parentElement;
+          while (parent) {
+            if (parent.tagName === 'BLOCKQUOTE') count++;
+            parent = parent.parentElement;
+          }
+          return count;
+        }
+
+        sorted.forEach(bq => {
+          const level = countBlockquoteParents(bq);
+          const indentWidth = 6 * level;
+          
+          // Создаём таблицу для имитации отступа
+          const table = document.createElement('table');
+          table.setAttribute('style',
+            `border-collapse: collapse; ` +
+            `width: 100%; ` +
+            `margin-bottom: 8pt; ` +
+            `border: none;`
+          );
+          table.setAttribute('cellpadding', '0');
+          table.setAttribute('cellspacing', '0');
+
+          const tr = document.createElement('tr');
+          
+          // Невидимая ячейка-отступ
+          const indentTd = document.createElement('td');
+          indentTd.setAttribute('style',
+            `width: ${indentWidth}pt; ` +
+            `border: none; ` +
+            `padding: 0; ` +
+            `margin: 0;`
+          );
+          indentTd.innerHTML = '&nbsp;';
+          
+          // Ячейка с контентом и рамкой
+          const contentTd = document.createElement('td');
+          contentTd.setAttribute('style',
+            `border-left: 3pt solid #667eea; ` +
+            `border-top: none; ` +
+            `border-right: none; ` +
+            `border-bottom: none; ` +
+            `padding-left: 10pt; ` +
+            `padding-top: 4pt; ` +
+            `padding-bottom: 4pt; ` +
+            `background-color: #f9f9ff; ` +
+            `vertical-align: top;`
+          );
+
+          // Переносим содержимое blockquote в ячейку контента
+          while (bq.firstChild) {
+            contentTd.appendChild(bq.firstChild);
+          }
+
+          // Стилизуем параграфы внутри
+          const paragraphs = contentTd.querySelectorAll('p');
+          paragraphs.forEach(p => {
+            p.setAttribute('style',
+              `margin-top: 2pt; ` +
+              `margin-bottom: 2pt; ` +
+              `margin-left: 0pt; ` +
+              `margin-right: 0pt; ` +
+              `text-indent: 0pt;`
+            );
+          });
+
+          tr.appendChild(indentTd);
+          tr.appendChild(contentTd);
+          table.appendChild(tr);
+
+          // Заменяем blockquote на таблицу
+          bq.parentNode.replaceChild(table, bq);
+        });
+      }
+
+      convertBlockquotesForWord(temp);
+
+      return temp.innerHTML;
+    }
+
     // Обновление счётчиков
     function updateStats() {
       const text = els.input.value;
@@ -489,102 +623,33 @@ function processData(data) {
       els.wordCount.textContent = `${words} слов`;
     }
 
-    // Создание буфера в формате CF_HTML для Word
-    function createCF_HTML(htmlContent) {
-      // Базовый фрагмент для вставки
-      const fragment = htmlContent.trim();
-      
-      // Маркеры фрагмента
-      const startFrag = '<!--StartFragment-->';
-      const endFrag = '<!--EndFragment-->';
-      
-      // Полный HTML документ
-      const fullDoc = `<html>\r\n<body>\r\n${startFrag}\r\n${fragment}\r\n${endFrag}\r\n</body>\r\n</html>`;
-      
-      // Подсчёт байтов в UTF-8
-      const encoder = new TextEncoder();
-      const fullBytes = encoder.encode(fullDoc);
-      const startFragBytes = encoder.encode(startFrag);
-      const endFragBytes = encoder.encode(endFrag);
-      
-      // Поиск позиций маркеров
-      let startFragIdx = -1, endFragIdx = -1;
-      
-      for (let i = 0; i < fullBytes.length - startFragBytes.length; i++) {
-        if (fullBytes.slice(i, i + startFragBytes.length).every((b, j) => b === startFragBytes[j])) {
-          startFragIdx = i + startFragBytes.length;
-          break;
-        }
-      }
-      
-      for (let i = 0; i < fullBytes.length - endFragBytes.length; i++) {
-        if (fullBytes.slice(i, i + endFragBytes.length).every((b, j) => b === endFragBytes[j])) {
-          // EndFragment должен указывать на позицию ПОСЛЕ закрывающего маркера
-          endFragIdx = i + endFragBytes.length;
-          break;
-        }
-      }
-      
-      // Заголовок с временными значениями
-      const headerTemplate = [
-        'Version:1.0',
-        'StartHTML:##########',
-        'EndHTML:##########',
-        'StartFragment:##########',
-        'EndFragment:##########',
-        '',
-        ''
-      ].join('\r\n');
-      
-      const headerBytes = encoder.encode(headerTemplate);
-      
-      // Расчёт реальных смещений
-      const startHTML = headerBytes.length;
-      const endHTML = headerBytes.length + fullBytes.length;
-      const startFragment = headerBytes.length + startFragIdx;
-      const endFragment = headerBytes.length + endFragIdx;
-      
-      // Финальный заголовок с правильными смещениями
-      const finalHeader = [
-        'Version:1.0',
-        'StartHTML:' + String(startHTML).padStart(10, '0'),
-        'EndHTML:' + String(endHTML).padStart(10, '0'),
-        'StartFragment:' + String(startFragment).padStart(10, '0'),
-        'EndFragment:' + String(endFragment).padStart(10, '0'),
-        '',
-        ''
-      ].join('\r\n');
-      
-      // Отладка: вывести смещения в консоль
-      console.log('CF_HTML offsets:', { startHTML, endHTML, startFragment, endFragment });
-      console.log('Header length:', headerBytes.length);
-      console.log('FullDoc length:', fullBytes.length);
-      
-      return finalHeader + fullDoc;
-    }
-
     // Копирование в буфер обмена
     async function copyToClipboard() {
       try {
-        const htmlForClipboard = createCF_HTML(els.preview.innerHTML);
+        // Сначала пробуем современный Clipboard API
+        const htmlContent = els.preview.innerHTML;
         
-        // Создаём ClipboardItem с поддержкой HTML и plain text
+        // Создаём clipboardData с правильным HTML (без CF_HTML заголовков)
+        const htmlBlob = new Blob([htmlContent], { type: 'text/html' });
+        const textBlob = new Blob([els.input.value], { type: 'text/plain' });
+        
         const clipboardItem = new ClipboardItem({
-          'text/html': new Blob([htmlForClipboard], { type: 'text/html' }),
-          'text/plain': new Blob([els.input.value], { type: 'text/plain' })
+          'text/html': htmlBlob,
+          'text/plain': textBlob
         });
-        
+
         await navigator.clipboard.write([clipboardItem]);
         showStatus('📋 Скопировано! Вставьте в Word (Ctrl+V)', 'success');
-        
+
         // Визуальный эффект
         const btn = els.copyBtn;
         const originalText = btn.innerHTML;
         btn.innerHTML = '✅ Скопировано!';
         setTimeout(() => btn.innerHTML = originalText, 2000);
-        
+
       } catch (err) {
         console.error('Clipboard API error:', err);
+        // Fallback - используем execCommand с выделением
         fallbackCopy(els.preview.innerHTML);
       }
     }
@@ -763,6 +828,16 @@ ${els.preview.innerHTML}
       debounceTimer = setTimeout(() => {
         convertMarkdown();
       }, 300);
+    });
+
+    // Переключение стилей
+    els.styleToggle.addEventListener('change', () => {
+      convertMarkdown();
+      if (els.styleToggle.checked) {
+        showStatus('📊 Стили для Word включены', 'info');
+      } else {
+        showStatus('🔓 Чистый вывод Showdown', 'info');
+      }
     });
     
     // ===== Инициализация при загрузке =====
