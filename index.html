@@ -93,6 +93,10 @@
     }
     #preview h1 { font-size: 2em; border-bottom: 2px solid #667eea; padding-bottom: 0.3em; }
     #preview h2 { font-size: 1.5em; border-bottom: 1px solid #ddd; padding-bottom: 0.3em; }
+    #preview h3 { font-size: 1.25em; color: #444; }
+    #preview h4 { font-size: 1.1em; color: #555; }
+    #preview h5 { font-size: 1em; color: #666; font-style: italic; }
+    #preview h6 { font-size: 0.9em; color: #777; font-style: italic; }
     #preview p { margin: 0.5em 0; }
     #preview ul, #preview ol { 
       margin: 0.5em 0; 
@@ -100,23 +104,33 @@
     }
     #preview li { margin: 0.3em 0; }
     #preview pre {
-      background: #f6f8fa;
+      background: #f3f4f6;
       padding: 12px;
       border-radius: 6px;
       overflow-x: auto;
-      border: 1px solid #ddd;
+      border: 1pt solid #d1d5db;
       margin: 10px 0;
+      font-family: 'Consolas', monospace;
+      font-size: 10pt;
+      color: #1f2937;
+      line-height: 1.3;
+      white-space: pre-wrap;
+      word-wrap: break-word;
     }
     #preview code {
-      background: #f0f0f0;
+      background: #f3f4f6;
       padding: 2px 6px;
       border-radius: 3px;
       font-family: 'Consolas', monospace;
-      font-size: 0.95em;
+      font-size: 10pt;
+      color: #dc2626;
+      border: 0.5pt solid #e5e7eb;
     }
     #preview pre code {
       background: none;
       padding: 0;
+      border: none;
+      color: #1f2937;
     }
     #preview table {
       border-collapse: collapse;
@@ -144,7 +158,11 @@
       text-decoration: none;
     }
     #preview a:hover { text-decoration: underline; }
-    #preview img { max-width: 100%; height: auto; }
+    #preview del, #preview s {
+      text-decoration: line-through;
+      color: #666;
+    }
+    #preview img { max-width: 256px; height: auto; display: block; margin: 8px 0; }
     #preview hr {
       border: none;
       border-top: 2px solid #eee;
@@ -350,6 +368,15 @@
 - ✅ [Ссылки](https://example.com) и изображения
 - ✅ Таблицы и цитаты
 
+#### Заголовок H4
+Этот уровень используется для детальных подразделов.
+
+##### Заголовок H5
+Ещё более глубокая вложенность заголовков.
+
+###### Заголовок H6
+Самый маленький заголовок (редко используется).
+
 ## 🔢 Многоуровневые списки
 
 ### Пример вложенного списка (4 уровня):
@@ -420,6 +447,25 @@ function processData(data) {
 >
 > Возврат на второй уровень.
 
+## 🖼️ Изображения
+
+![Логотип Markdown](lib/icon256.png)
+
+*Изображение выше загружается из локальной папки lib.*
+
+## ✨ Дополнительное форматирование
+
+### Перенос строк  
+Этот текст имеет два пробела в конце предыдущей строки,  
+что создаёт принудительный перенос на новую строку.
+
+### Экранирование символов
+
+- Звёздочки: \*\*не жирный\*\*
+- Подчёркивания: \_\_не курсив\_\_
+- Решётка: \#не заголовок
+- Обратная кавычка: \`не код\`
+
 ## 🎯 Заключение
 
 1. Этот документ демонстрирует возможности конвертации
@@ -467,13 +513,15 @@ function processData(data) {
     }
 
     // Конвертация Markdown → HTML с Word-совместимыми стилями
-    function convertMarkdown() {
+    async function convertMarkdown() {
       try {
         const md = els.input.value;
         let html = converter.makeHtml(md);
 
         // Если включена опция - добавляем стили для Word
         if (els.styleToggle.checked) {
+          // Сначала конвертируем изображения в base64
+          html = await convertImagesToBase64(html);
           html = applyWordStyles(html);
         }
 
@@ -483,13 +531,78 @@ function processData(data) {
         els.copyBtn.disabled = false;
         els.copyHtmlBtn.disabled = false;
         els.downloadBtn.disabled = false;
-        showStatus('✅ Конвертация завершена', 'success');
         return html;
       } catch (err) {
         console.error('Conversion error:', err);
         showStatus('❌ Ошибка конвертации: ' + err.message, 'error');
         return '';
       }
+    }
+
+    // Конвертация изображений в base64 для встраивания в Word
+    async function convertImagesToBase64(html) {
+      const temp = document.createElement('div');
+      temp.innerHTML = html;
+      const images = temp.querySelectorAll('img');
+
+      let successCount = 0;
+      let failCount = 0;
+
+      const promises = Array.from(images).map(async (img) => {
+        const src = img.getAttribute('src');
+        if (!src) return;
+
+        try {
+          // Пробуем загрузить изображение через fetch
+          const response = await fetch(src);
+          if (!response.ok) {
+            failCount++;
+            console.warn(`Не удалось загрузить изображение ${src}: ${response.status}`);
+            return;
+          }
+
+          const blob = await response.blob();
+          
+          // Проверяем, что это действительно изображение
+          if (!blob.type.startsWith('image/')) {
+            failCount++;
+            console.warn(`${src} не является изображением`);
+            return;
+          }
+          
+          const base64 = await blobToBase64(blob);
+          
+          // Заменяем src на base64
+          img.setAttribute('src', base64);
+          successCount++;
+        } catch (err) {
+          failCount++;
+          console.warn(`Не удалось загрузить изображение ${src}:`, err.message);
+          // Если не удалось загрузить, оставляем оригинальный src
+        }
+      });
+
+      // Ждём загрузки всех изображений
+      await Promise.all(promises);
+      
+      // Показываем статус загрузки изображений
+      if (failCount > 0 && successCount === 0) {
+        showStatus('⚠️ Изображения не загружаются. Запустите через локальный сервер (python -m http.server 8000)', 'error');
+      } else if (successCount > 0) {
+        showStatus(`✅ Конвертация завершена. Изображений встроено: ${successCount}`, 'success');
+      }
+      
+      return temp.innerHTML;
+    }
+
+    // Преобразование Blob в base64
+    function blobToBase64(blob) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      });
     }
 
     // Применение стилей для совместимости с Word
@@ -521,6 +634,121 @@ function processData(data) {
           td.style.padding = '6pt 8pt';
         });
       });
+
+      // Преобразуем блоки кода для Word
+      function convertCodeBlocksForWord(container) {
+        const preBlocks = container.querySelectorAll('pre');
+        
+        preBlocks.forEach(pre => {
+          const codeElement = pre.querySelector('code');
+          const codeText = codeElement ? codeElement.textContent : pre.textContent;
+          
+          // Создаём таблицу для блока кода (Word лучше работает с таблицами)
+          const table = document.createElement('table');
+          table.setAttribute('style',
+            `border-collapse: collapse; ` +
+            `width: 100%; ` +
+            `margin-bottom: 10pt; ` +
+            `border: 1pt solid #d1d5db;`
+          );
+          table.setAttribute('cellpadding', '0');
+          table.setAttribute('cellspacing', '0');
+
+          const tr = document.createElement('tr');
+          const td = document.createElement('td');
+          
+          // Стили для ячейки с кодом
+          td.setAttribute('style',
+            `background-color: #f3f4f6; ` +
+            `border: 1pt solid #d1d5db; ` +
+            `padding: 10pt 12pt; ` +
+            `font-family: 'Courier New', monospace; ` +
+            `font-size: 10pt; ` +
+            `color: #1f2937; ` +
+            `white-space: pre-wrap; ` +
+            `word-wrap: break-word;`
+          );
+
+          // Разбиваем код на строки и создаём параграфы для каждой строки
+          const lines = codeText.split('\n');
+          lines.forEach((line, index) => {
+            const p = document.createElement('p');
+            p.setAttribute('style',
+              `margin: 0pt; ` +
+              `font-family: 'Courier New', monospace; ` +
+              `font-size: 10pt; ` +
+              `color: #1f2937; ` +
+              `line-height: 1.3;`
+            );
+            
+            // Заменяем пробелы на &nbsp; для сохранения отступов в Word
+            // Word игнорирует множественные обычные пробелы
+            let processedLine = line;
+            if (line.length > 0) {
+              // Заменяем все пробелы на &nbsp; для сохранения отступов
+              processedLine = line.replace(/ /g, '&nbsp;');
+              // Заменяем табуляции на 4 &nbsp;
+              processedLine = processedLine.replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;');
+            }
+            
+            p.innerHTML = processedLine;
+            td.appendChild(p);
+          });
+
+          tr.appendChild(td);
+          table.appendChild(tr);
+
+          // Заменяем pre на таблицу
+          pre.parentNode.replaceChild(table, pre);
+        });
+      }
+
+      // Преобразуем инлайн-код для Word
+      function convertInlineCodeForWord(container) {
+        // Находим все элементы code, которые не внутри pre
+        const allCode = container.querySelectorAll('code');
+        
+        allCode.forEach(code => {
+          // Проверяем, не находится ли code внутри pre (уже обработано)
+          if (code.closest('pre')) {
+            return;
+          }
+
+          // Создаём span с inline-стилями для Word
+          const span = document.createElement('span');
+          span.setAttribute('style',
+            `font-family: 'Courier New', monospace; ` +
+            `font-size: 10pt; ` +
+            `background-color: #f3f4f6; ` +
+            `border: 0.5pt solid #e5e7eb; ` +
+            `padding: 1pt 4pt; ` +
+            `border-radius: 2pt; ` +
+            `color: #dc2626;`
+          );
+          span.textContent = code.textContent;
+
+          // Заменяем code на span
+          code.parentNode.replaceChild(span, code);
+        });
+      }
+
+      // Преобразуем зачеркнутый текст для Word
+      function convertStrikethroughForWord(container) {
+        // Находим все элементы del (зачеркнутый текст)
+        const allDel = container.querySelectorAll('del');
+        
+        allDel.forEach(del => {
+          // Создаём span с inline-стилями для Word
+          const span = document.createElement('span');
+          span.setAttribute('style',
+            `text-decoration: line-through;`
+          );
+          span.textContent = del.textContent;
+
+          // Заменяем del на span
+          del.parentNode.replaceChild(span, del);
+        });
+      }
 
       // Преобразуем цитаты для Word (вместо вложенных blockquote используем таблицы с отступами)
       function convertBlockquotesForWord(container) {
@@ -610,6 +838,15 @@ function processData(data) {
       }
 
       convertBlockquotesForWord(temp);
+      
+      // Преобразуем блоки кода для Word
+      convertCodeBlocksForWord(temp);
+      
+      // Преобразуем инлайн-код для Word
+      convertInlineCodeForWord(temp);
+      
+      // Преобразуем зачеркнутый текст для Word
+      convertStrikethroughForWord(temp);
 
       return temp.innerHTML;
     }
@@ -746,15 +983,22 @@ function processData(data) {
   body { font-family: Calibri, Arial, sans-serif; font-size: 11pt; line-height: 1.15; }
   h1 { font-size: 24pt; margin: 12pt 0 6pt 0; }
   h2 { font-size: 18pt; margin: 10pt 0 5pt 0; }
+  h3 { font-size: 14pt; margin: 8pt 0 4pt 0; color: #444; }
+  h4 { font-size: 12pt; margin: 8pt 0 4pt 0; color: #555; }
+  h5 { font-size: 11pt; margin: 6pt 0 3pt 0; color: #666; font-style: italic; }
+  h6 { font-size: 10pt; margin: 6pt 0 3pt 0; color: #777; font-style: italic; }
   p { margin: 0 0 8pt 0; }
   ul, ol { margin: 6pt 0; padding-left: 24pt; }
   li { margin: 3pt 0; }
   table { border-collapse: collapse; width: 100%; }
   th, td { border: 1pt solid #ddd; padding: 6pt 10pt; }
   th { background: #f5f5f5; }
-  pre { background: #f8f9fa; padding: 10pt; border-radius: 4pt; overflow-x: auto; }
-  code { background: #f0f0f0; padding: 2pt 5pt; border-radius: 3pt; }
+  pre { background: #f3f4f6; padding: 10pt; border: 1pt solid #d1d5db; border-radius: 4pt; overflow-x: auto; font-family: 'Consolas', monospace; font-size: 10pt; color: #1f2937; line-height: 1.3; }
+  code { background: #f3f4f6; padding: 2pt 5pt; border-radius: 3pt; border: 0.5pt solid #e5e7eb; font-family: 'Consolas', monospace; font-size: 10pt; color: #dc2626; }
+  pre code { background: none; padding: 0; border: none; color: #1f2937; }
   blockquote { margin: 10pt 0; padding: 8pt 16pt; border-left: 4pt solid #667eea; background: #f9f9ff; }
+  img { max-width: 256px; height: auto; display: block; margin: 8pt 0; }
+  del, s { text-decoration: line-through; color: #999; }
   a { color: #0563c1; text-decoration: none; }
 </style>
 </head>
@@ -804,10 +1048,10 @@ ${els.preview.innerHTML}
     
     // Загрузка Markdown файла
     els.loadMdBtn.addEventListener('click', loadMarkdownFile);
-    
+
     // Конвертация по кнопке
-    els.convertBtn.addEventListener('click', convertMarkdown);
-    
+    els.convertBtn.addEventListener('click', () => convertMarkdown());
+
     // Копирование
     els.copyBtn.addEventListener('click', copyToClipboard);
     
@@ -834,7 +1078,7 @@ ${els.preview.innerHTML}
     els.styleToggle.addEventListener('change', () => {
       convertMarkdown();
       if (els.styleToggle.checked) {
-        showStatus('📊 Стили для Word включены', 'info');
+        showStatus('📊 Стили для Word включены (изображения встраиваются в документ)', 'info');
       } else {
         showStatus('🔓 Чистый вывод Showdown', 'info');
       }
