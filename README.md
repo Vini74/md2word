@@ -1,6 +1,6 @@
 # Markdown to Word Converter
 
-A browser-based tool that converts Markdown to Word-compatible HTML and copies it to clipboard in CF_HTML format for pasting into Microsoft Word.
+A browser-based tool that converts Markdown to Word-compatible HTML and copies it to clipboard for pasting into Microsoft Word. Supports single-file editing and batch processing of multiple files merged into one document.
 
 ## What it is
 
@@ -8,34 +8,92 @@ A single-page application (SPA) that runs entirely in your browser. Converts Mar
 
 ## Key Features
 
-- Convert Markdown to Word-compatible HTML with inline styles
-- **Image embedding** in documents (base64 conversion during conversion)
-- **Source code styling** with preserved indentation (Courier New font)
-- "Copy DOC to clipboard" button – creates CF_HTML formatted data for proper Word pasting
+### Single File Mode
+- Enter Markdown in the text area
+- Load individual files (.md, .markdown, .txt)
 - Real-time preview
-- Load Markdown files (.md, .markdown, .txt)
-- Download result as HTML file
 - Auto-conversion on input
+
+### Batch Processing (Multiple Files)
+- **Drag & Drop** — drop files from file explorer directly onto the queue panel
+- **File picker** — select one or multiple files via dialog
+- **Order management** — ↑ ↓ buttons for precise positioning
+- **Sort by name** — quick alphabetical sorting
+- **Automatic merging** — all files are combined and converted into one document
+- **Show filename option** — checkbox to add file names before each section
+- **Page breaks** — automatic page breaks between files for Word
+- **Queue clearing** — "🗑️ Clear queue" button resets only the file list
+
+### Common Features
+- Convert Markdown to Word-compatible HTML with inline styles
+- **Image embedding** in documents (base64 conversion)
+- **Source code styling** with preserved indentation (Courier New)
+- "Copy DOC to clipboard" button – for proper Word pasting
+- "Copy HTML to clipboard" button – for raw HTML
+- Download result as HTML file
 - Support for complex structures: nested lists, tables, code blocks, quotes, images, H1-H6 headings
+- **Toast notifications** — floating action messages (10 sec)
+- **Status bar** — persistent current state display
 
-## How to use
+## How to Use
 
+### Single File
 1. Open `index.html` in a browser or start a local server (recommended)
-2. Enter Markdown in the left field or load a file
+2. Enter Markdown in the text area or load a file via "📂 Load Markdown"
 3. Make sure "📊 Styles for Word" option is enabled (for image embedding)
 4. Click "Convert" (or wait for auto-conversion)
-5. Click "Copy DOC to clipboard"
+5. Click "📋 Copy DOC to clipboard"
 6. Paste (Ctrl+V) into Microsoft Word
 
-## Technical details
+### Multiple Files
+1. Open `index.html` in a browser
+2. **Drop files** from your file explorer onto the "📑 File Queue" panel **OR** click "📂 Load Markdown" and select multiple files
+3. Files are automatically merged and converted
+4. **Reorder files** using ↑ ↓ buttons (auto-conversion triggers automatically)
+5. Optionally enable "📄 Show filename" checkbox to add file name headings
+6. Click "📋 Copy DOC to clipboard" and paste into Word
+
+### File Queue Controls
+| Control | Description |
+|---------|-------------|
+| ↑ ↓ | Move file up/down in the queue |
+| ✕ | Remove file from queue |
+| 🔤 Sort by name | Alphabetical sorting |
+| ➕ Add more files | Append files to existing queue |
+| 🗑️ Clear queue | Reset only the file list |
+| 🗑️ Clear (top bar) | Reset everything (editor + queue) |
+
+## Technical Details
 
 - Pure HTML/CSS/JavaScript, no server-side code
 - Uses Showdown.js library (included locally in `/lib`)
 - Clipboard API for clipboard operations
 - **Images are converted to base64** for embedding in documents (works offline in Word)
 - **Code formatting preserves indentation** by replacing spaces with `&nbsp;`
-- CF_HTML format ensures correct pasting into Word
 - All data processed locally, works completely offline
+
+### Batch Processing (Node.js)
+
+For automation without a browser, use the CLI utilities:
+
+**`simple-batch-convert.js`** — no dependencies:
+```bash
+node simple-batch-convert.js ./docs output.html
+node simple-batch-convert.js ./docs output.html --separator=line
+```
+
+**`batch-convert.js`** — uses Showdown (requires `npm install showdown`):
+```bash
+npm install
+node batch-convert.js ./docs output.html --toc --sort=name
+```
+
+Options for `batch-convert.js`:
+- `--sort=name` — sort files by name
+- `--separator=page-break|line|none` — separator type between files
+- `--toc` — add table of contents
+- `--title="Title"` — document title
+- `--verbose` — detailed output
 
 ## Running
 
@@ -62,12 +120,15 @@ npx http-server
 
 Then open: `http://localhost:8000`
 
-## Project files
+## Project Files
 
 - `index.html` – main application
 - `lib/showdown.min.js` – Markdown conversion library
 - `lib/icon256.png` – example image for embedding demonstration
 - `BigExample.md` – example of a complex Markdown document
+- `batch-convert.js` – batch conversion (requires showdown)
+- `simple-batch-convert.js` – batch conversion (no dependencies)
+- `package.json` – dependencies for Node.js scripts
 - `prompt.txt` – original requirements
 - `README_RU.md` – documentation in Russian
 
@@ -91,7 +152,7 @@ Then open: `http://localhost:8000`
 ## Limitations
 
 - Some advanced Markdown table features may not be supported
-- Requires a modern browser with Clipboard API support
+- Requires a modern browser with Clipboard API and Drag & Drop support
 - A local server is recommended for proper image loading
 
 ## License

@@ -193,7 +193,7 @@
       align-items: center;
       gap: 6px;
     }
-    button:hover:not(:disabled) { 
+    button:hover:not(:disabled) {
       transform: translateY(-2px);
       box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
     }
@@ -202,10 +202,10 @@
       cursor: not-allowed;
       transform: none;
     }
-    button.secondary { 
+    button.secondary {
       background: #6c757d;
     }
-    button.secondary:hover:not(:disabled) { 
+    button.secondary:hover:not(:disabled) {
       background: #545b62;
       box-shadow: 0 4px 12px rgba(108, 117, 125, 0.4);
     }
@@ -215,37 +215,213 @@
     button.success:hover:not(:disabled) {
       box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
     }
+
+    /* Стили для панели очереди файлов */
+    .multi-file-panel {
+      margin: 15px 0;
+      padding: 20px;
+      background: #f8f9fa;
+      border: 2px dashed #667eea;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+    }
+    .multi-file-panel.drag-over {
+      background: #e8edff;
+      border-color: #4338ca;
+      border-style: solid;
+      transform: scale(1.01);
+    }
+    .multi-file-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    .multi-file-header h3 {
+      margin: 0;
+      color: #333;
+      font-size: 1.2rem;
+    }
+    .file-list {
+      max-height: 300px;
+      overflow-y: auto;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      background: #fff;
+    }
+    .file-item {
+      display: flex;
+      align-items: center;
+      padding: 10px 15px;
+      border-bottom: 1px solid #eee;
+      transition: background 0.2s;
+      gap: 8px;
+    }
+    .file-item:last-child {
+      border-bottom: none;
+    }
+    .file-item:hover {
+      background: #f0f4ff;
+    }
+    .file-number {
+      background: #667eea;
+      color: white;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+    .file-info {
+      flex: 1;
+      min-width: 0;
+    }
+    .file-name {
+      font-weight: 500;
+      color: #333;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .file-size {
+      font-size: 12px;
+      color: #888;
+    }
+    .file-controls {
+      display: flex;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+    .file-move-btn {
+      background: #667eea;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      width: 24px;
+      height: 24px;
+      cursor: pointer;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      transition: background 0.2s;
+    }
+    .file-move-btn:hover:not(:disabled) {
+      background: #5568d3;
+    }
+    .file-move-btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    .file-remove {
+      background: #dc3545;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      cursor: pointer;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      padding: 0;
+    }
+    .file-remove:hover {
+      background: #c82333;
+    }
+    .file-list-controls {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .file-list-controls button {
+      padding: 8px 16px;
+      font-size: 13px;
+    }
     
+    /* Стили для toast-уведомлений */
+    .toast-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 10000;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      pointer-events: none;
+    }
+    .toast {
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-weight: 500;
+      font-size: 14px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      animation: toastIn 0.3s ease;
+      max-width: 350px;
+      pointer-events: auto;
+    }
+    .toast.success {
+      background: #d4edda;
+      color: #155724;
+      border-left: 4px solid #28a745;
+    }
+    .toast.error {
+      background: #f8d7da;
+      color: #721c24;
+      border-left: 4px solid #dc3545;
+    }
+    .toast.info {
+      background: #cce5ff;
+      color: #004085;
+      border-left: 4px solid #007bff;
+    }
+    @keyframes toastIn {
+      from { opacity: 0; transform: translateX(100px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
     .status {
       text-align: center;
       padding: 12px 20px;
       border-radius: 8px;
       margin: 15px 0;
       font-weight: 500;
-      display: none;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       animation: slideIn 0.3s ease;
+      background: #f0f0f0;
+      color: #888;
+      border: 1px solid #ddd;
     }
     @keyframes slideIn {
       from { opacity: 0; transform: translateY(-10px); }
       to { opacity: 1; transform: translateY(0); }
     }
-    .status.success { 
-      background: #d4edda; 
-      color: #155724; 
+    .status.success {
+      background: #d4edda;
+      color: #155724;
       border: 1px solid #c3e6cb;
-      display: block; 
     }
-    .status.error { 
-      background: #f8d7da; 
-      color: #721c24; 
+    .status.error {
+      background: #f8d7da;
+      color: #721c24;
       border: 1px solid #f5c6cb;
-      display: block; 
     }
     .status.info {
       background: #cce5ff;
       color: #004085;
       border: 1px solid #b8daff;
-      display: block;
     }
     
     .hint {
@@ -277,6 +453,9 @@
 <body>
   <div class="wrapper">
     <h1>📝 Markdown → Word Converter</h1>
+
+    <!-- Контейнер для toast-уведомлений -->
+    <div id="toastContainer" class="toast-container"></div>
     
     <div class="controls">
       <button id="loadMdBtn" class="secondary">📂 Загрузить Markdown</button>
@@ -285,6 +464,32 @@
       <button id="copyHtmlBtn" class="secondary" disabled>📄 Копировать HTML в буфер</button>
       <button id="downloadBtn" class="secondary" disabled>💾 Скачать как HTML</button>
       <button id="clearBtn" class="secondary">🗑️ Очистить</button>
+    </div>
+
+    <!-- Скрытый input для загрузки файлов (поддерживает множественную загрузку) -->
+    <input type="file" id="fileInput" multiple accept=".md,.markdown,.txt" style="display: none;">
+
+    <!-- Панель очереди файлов (всегда видима) -->
+    <div id="multiFilePanel" class="multi-file-panel">
+      <div class="multi-file-header">
+        <h3>📑 Очередь файлов</h3>
+        <button id="clearFilesOnlyBtn" class="secondary" style="padding: 6px 12px; font-size: 12px;">🗑️ Очистить очередь</button>
+      </div>
+      <div style="font-size: 13px; color: #666; margin-bottom: 12px; padding: 8px; background: #fff; border-radius: 4px; border-left: 3px solid #667eea;">
+        💡 <strong>Порядок:</strong> Используйте кнопки ↑ ↓ для изменения порядка. Файлы будут объединены в один документ в этом порядке.
+        <br>🖱️ <strong>Загрузка:</strong> Перетащите файлы из проводника прямо на эту область или нажмите кнопку загрузки.
+      </div>
+      <div id="fileList" class="file-list"></div>
+      <div class="file-list-controls">
+        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+          <button id="addMoreFilesBtn" class="secondary" style="padding: 8px 16px; font-size: 13px;">➕ Добавить ещё файлы</button>
+          <button id="sortByNameBtn" class="secondary" style="padding: 8px 16px; font-size: 13px;">🔤 Сортировать по имени</button>
+          <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 14px; color: #333; margin-left: auto;">
+            <input type="checkbox" id="showFileNameCheckbox" style="cursor: pointer; width: 18px; height: 18px;">
+            <span>📄 Вставить имя файла в документ</span>
+          </label>
+        </div>
+      </div>
     </div>
     
     <div id="status" class="status"></div>
@@ -478,38 +683,287 @@ function processData(data) {
 
     // ===== Функции =====
 
-    // Загрузка Markdown из файла
-    function loadMarkdownFile() {
-      // Создаём невидимый input типа file
-      const fileInput = document.createElement('input');
-      fileInput.type = 'file';
-      fileInput.accept = '.md,.markdown,.txt';
-      fileInput.style.display = 'none';
-      
-      fileInput.addEventListener('change', (event) => {
-        const file = event.target.files[0];
-        if (!file) {
-          showStatus('❌ Файл не выбран', 'error');
+    // Массив для хранения загруженных файлов
+    let uploadedFiles = [];
+
+    // Инициализация Drag & Drop для панели (загрузка файлов из проводника)
+    function initPanelDragDrop() {
+      const panel = document.getElementById('multiFilePanel');
+
+      panel.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        // Проверяем, что это файлы из проводника (не внутренние элементы)
+        if (e.dataTransfer.types.includes('Files')) {
+          panel.classList.add('drag-over');
+        }
+      });
+
+      panel.addEventListener('dragleave', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        // Проверяем, что курсор действительно покинул панель
+        const rect = panel.getBoundingClientRect();
+        const x = e.clientX;
+        const y = e.clientY;
+        if (x < rect.left || x > rect.right || y < rect.top || y > rect.bottom) {
+          panel.classList.remove('drag-over');
+        }
+      });
+
+      panel.addEventListener('drop', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        panel.classList.remove('drag-over');
+
+        const files = Array.from(e.dataTransfer.files);
+        if (files.length === 0) return;
+
+        // Фильтруем только markdown файлы
+        const mdFiles = files.filter(file => {
+          const ext = file.name.toLowerCase();
+          return ext.endsWith('.md') || ext.endsWith('.markdown') || ext.endsWith('.txt');
+        });
+
+        if (mdFiles.length === 0) {
+          showToast('⚠️ Поддерживаются только .md, .markdown, .txt файлы', 'error');
           return;
         }
-        
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          const content = e.target.result;
-          els.input.value = content;
-          updateStats();
-          convertMarkdown();
-          showStatus('📂 Файл загружен: ' + file.name, 'success');
-        };
-        reader.onerror = () => {
-          showStatus('❌ Ошибка чтения файла', 'error');
-        };
-        reader.readAsText(file, 'UTF-8');
+
+        let loadedCount = 0;
+        let errorCount = 0;
+
+        mdFiles.forEach(file => {
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            uploadedFiles.push({
+              name: file.name,
+              content: event.target.result,
+              size: file.size
+            });
+            loadedCount++;
+
+            if (loadedCount + errorCount === mdFiles.length) {
+              renderFileList();
+              showToast(`📂 Перетащено файлов: ${loadedCount}`, 'info');
+              convertAllFiles();
+            }
+          };
+          reader.onerror = () => {
+            errorCount++;
+            if (loadedCount + errorCount === mdFiles.length) {
+              showToast(`⚠️ Ошибка загрузки: ${errorCount} файл(ов)`, 'error');
+            }
+          };
+          reader.readAsText(file, 'UTF-8');
+        });
       });
-      
-      document.body.appendChild(fileInput);
+
+      // Предотвращаем открытие файлов при drop вне панели
+      document.addEventListener('dragover', (e) => {
+        e.preventDefault();
+      });
+
+      document.addEventListener('drop', (e) => {
+        e.preventDefault();
+      });
+    }
+
+    // Обработчик для input файлов (один раз при старте)
+    function initFileInput() {
+      const fileInput = document.getElementById('fileInput');
+
+      fileInput.addEventListener('change', (event) => {
+        const files = Array.from(event.target.files);
+        if (files.length === 0) return;
+
+        let loadedCount = 0;
+        let errorCount = 0;
+
+        files.forEach(file => {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            uploadedFiles.push({
+              name: file.name,
+              content: e.target.result,
+              size: file.size
+            });
+            loadedCount++;
+
+            if (loadedCount + errorCount === files.length) {
+              renderFileList();
+              showToast(`📂 Загружено файлов: ${loadedCount}`, 'info');
+              // Автоматически объединяем и конвертируем
+              convertAllFiles();
+            }
+          };
+          reader.onerror = () => {
+            errorCount++;
+            if (loadedCount + errorCount === files.length) {
+              showToast(`⚠️ Ошибка загрузки: ${errorCount} файл(ов)`, 'error');
+            }
+          };
+          reader.readAsText(file, 'UTF-8');
+        });
+      });
+    }
+
+    // Загрузка файлов (один или несколько)
+    function loadFiles() {
+      const fileInput = document.getElementById('fileInput');
+      fileInput.value = ''; // Сброс предыдущего выбора
       fileInput.click();
-      document.body.removeChild(fileInput);
+    }
+
+    // Отображение списка файлов
+    function renderFileList() {
+      const fileList = document.getElementById('fileList');
+      fileList.innerHTML = '';
+
+      if (uploadedFiles.length === 0) {
+        fileList.innerHTML = `
+          <div style="padding: 30px 20px; text-align: center; color: #888;">
+            <div style="font-size: 48px; margin-bottom: 10px;">📂</div>
+            <div style="font-size: 15px; font-weight: 500; margin-bottom: 5px;">Нет загруженных файлов</div>
+            <div style="font-size: 13px;">Перетащите файлы сюда или нажмите кнопку загрузки</div>
+          </div>
+        `;
+        return;
+      }
+
+      uploadedFiles.forEach((file, index) => {
+        const item = document.createElement('div');
+        item.className = 'file-item';
+        item.dataset.index = index;
+
+        item.innerHTML = `
+          <span class="file-number">${index + 1}</span>
+          <div class="file-info">
+            <div class="file-name">${file.name}</div>
+            <div class="file-size">${formatFileSize(file.size)}</div>
+          </div>
+          <div class="file-controls">
+            <button class="file-move-btn" data-index="${index}" data-direction="up" title="Вверх" ${index === 0 ? 'disabled' : ''}>↑</button>
+            <button class="file-move-btn" data-index="${index}" data-direction="down" title="Вниз" ${index === uploadedFiles.length - 1 ? 'disabled' : ''}>↓</button>
+            <button class="file-remove" data-index="${index}" title="Удалить файл">✕</button>
+          </div>
+        `;
+
+        // Кнопки перемещения
+        item.querySelectorAll('.file-move-btn').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const idx = parseInt(e.target.dataset.index);
+            const direction = e.target.dataset.direction;
+            moveFile(idx, direction);
+          });
+        });
+
+        // Кнопка удаления
+        item.querySelector('.file-remove').addEventListener('click', (e) => {
+          e.stopPropagation();
+          const idx = parseInt(e.target.dataset.index);
+          uploadedFiles.splice(idx, 1);
+          renderFileList();
+          // Автоматически конвертируем после удаления
+          if (uploadedFiles.length > 0) {
+            showToast(`🗑️ Файл удалён`, 'info');
+            convertAllFiles();
+          } else {
+            // Если файлов больше нет - очищаем всё
+            els.input.value = '';
+            els.preview.innerHTML = '';
+            els.copyBtn.disabled = true;
+            els.copyHtmlBtn.disabled = true;
+            els.downloadBtn.disabled = true;
+            updateStats();
+            showStatus('');
+            showToast('🗑️ Все файлы удалнены', 'info');
+          }
+        });
+
+        fileList.appendChild(item);
+      });
+    }
+
+    // Перемещение файла вверх или вниз
+    function moveFile(index, direction) {
+      const newIndex = direction === 'up' ? index - 1 : index + 1;
+      
+      if (newIndex < 0 || newIndex >= uploadedFiles.length) {
+        return;
+      }
+
+      // Меняем местами элементы
+      const temp = uploadedFiles[index];
+      uploadedFiles[index] = uploadedFiles[newIndex];
+      uploadedFiles[newIndex] = temp;
+      
+      renderFileList();
+      showToast('📑 Порядок файлов изменён', 'info');
+      // Автоматически конвертируем после изменения порядка
+      convertAllFiles();
+    }
+
+    // Форматирование размера файла
+    function formatFileSize(bytes) {
+      if (bytes < 1024) return bytes + ' Б';
+      if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' КБ';
+      return (bytes / (1024 * 1024)).toFixed(1) + ' МБ';
+    }
+
+    // Сортировка файлов по имени
+    function sortFilesByName() {
+      uploadedFiles.sort((a, b) => a.name.localeCompare(b.name, 'ru'));
+      renderFileList();
+      showToast('🔤 Файлы отсортированы по имени', 'info');
+      // Автоматически конвертируем после сортировки
+      convertAllFiles();
+    }
+
+    // Объединение и конвертация всех файлов
+    function convertAllFiles() {
+      if (uploadedFiles.length === 0) {
+        showToast('❌ Нет загруженных файлов', 'error');
+        showStatus('');
+        return;
+      }
+
+      showStatus(`🔄 Конвертация...`, 'info');
+
+      // Проверяем, нужно ли показывать имена файлов
+      const showFileName = document.getElementById('showFileNameCheckbox').checked;
+
+      // Объединяем все файлы с разделителями и заголовками
+      let combinedContent = '';
+      
+      uploadedFiles.forEach((file, index) => {
+        // Добавляем заголовок файла, если чекбокс включён
+        if (showFileName) {
+          if (index > 0) {
+            // Разрыв страницы перед новым файлом
+            combinedContent += '\n\n<div style="page-break-after: always; margin: 40px 0;"></div>\n\n';
+          }
+          
+          // Добавляем заголовок с именем файла
+          combinedContent += `# 📄 ${file.name}\n\n`;
+        }
+        
+        combinedContent += file.content;
+      });
+
+      // Помещаем объединённый контент в поле ввода
+      els.input.value = combinedContent;
+      updateStats();
+
+      // Конвертируем
+      convertMarkdown().then(() => {
+        const fileCountMsg = showFileName 
+          ? `✅ Готово! Файлов объединено: ${uploadedFiles.length} (с именами)`
+          : `✅ Готово! Файлов объединено: ${uploadedFiles.length}`;
+        showToast(fileCountMsg, 'success');
+        showStatus(`${fileCountMsg} | Нажмите "Копировать DOC" для вставки в Word`, 'success');
+      });
     }
 
     // Конвертация Markdown → HTML с Word-совместимыми стилями
@@ -534,6 +988,7 @@ function processData(data) {
         return html;
       } catch (err) {
         console.error('Conversion error:', err);
+        showToast('❌ Ошибка конвертации: ' + err.message, 'error');
         showStatus('❌ Ошибка конвертации: ' + err.message, 'error');
         return '';
       }
@@ -587,9 +1042,9 @@ function processData(data) {
       
       // Показываем статус загрузки изображений
       if (failCount > 0 && successCount === 0) {
-        showStatus('⚠️ Изображения не загружаются. Запустите через локальный сервер (python -m http.server 8000)', 'error');
+        showToast('⚠️ Изображения не загружаются. Запустите локальный сервер', 'error');
       } else if (successCount > 0) {
-        showStatus(`✅ Конвертация завершена. Изображений встроено: ${successCount}`, 'success');
+        showToast(`✅ Изображений встроено: ${successCount}`, 'success');
       }
       
       return temp.innerHTML;
@@ -876,7 +1331,7 @@ function processData(data) {
         });
 
         await navigator.clipboard.write([clipboardItem]);
-        showStatus('📋 Скопировано! Вставьте в Word (Ctrl+V)', 'success');
+        showToast('📋 Скопировано! Вставьте в Word (Ctrl+V)', 'success');
 
         // Визуальный эффект
         const btn = els.copyBtn;
@@ -903,8 +1358,8 @@ function processData(data) {
         });
         
         await navigator.clipboard.write([clipboardItem]);
-        showStatus('📄 HTML скопирован в буфер обмена', 'success');
-        
+        showToast('📄 HTML скопирован в буфер обмена', 'success');
+
         // Визуальный эффект
         const btn = els.copyHtmlBtn;
         const originalText = btn.innerHTML;
@@ -936,9 +1391,9 @@ function processData(data) {
       
       try {
         document.execCommand('copy');
-        showStatus('📄 HTML скопирован (совместимый режим)', 'success');
+        showToast('📄 HTML скопирован (совместимый режим)', 'success');
       } catch (e) {
-        showStatus('❌ Не удалось скопировать HTML. Попробуйте выделить текст вручную.', 'error');
+        showToast('❌ Не удалось скопировать HTML. Попробуйте выделить текст вручную.', 'error');
       } finally {
         document.body.removeChild(temp);
         sel.removeAllRanges();
@@ -963,9 +1418,9 @@ function processData(data) {
       
       try {
         document.execCommand('copy');
-        showStatus('📋 Скопировано (совместимый режим)! Вставьте в Word', 'success');
+        showToast('📋 Скопировано (совместимый режим)! Вставьте в Word', 'success');
       } catch (e) {
-        showStatus('❌ Не удалось скопировать. Попробуйте выделить текст вручную.', 'error');
+        showToast('❌ Не удалось скопировать. Попробуйте выделить текст вручную.', 'error');
       } finally {
         document.body.removeChild(temp);
         sel.removeAllRanges();
@@ -1016,8 +1471,8 @@ ${els.preview.innerHTML}
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
-      
-      showStatus('💾 Файл скачан', 'success');
+
+      showToast('💾 Файл скачан', 'success');
     }
 
     // Очистка
@@ -1027,27 +1482,81 @@ ${els.preview.innerHTML}
       els.copyBtn.disabled = true;
       els.copyHtmlBtn.disabled = true;
       els.downloadBtn.disabled = true;
+      uploadedFiles = [];
+      renderFileList();
       updateStats();
       showStatus('🗑️ Очищено', 'info');
+      showToast('🗑️ Очищено', 'info');
     }
 
-    // Показ статуса
+    // Константа: время показа toast (миллисекунды)
+    const TOAST_DURATION = 10000;
+
+    // Toast-уведомления (всплывающие и исчезающие)
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      toast.textContent = message;
+      container.appendChild(toast);
+
+      // Удаляем с плавной анимацией через TOAST_DURATION
+      setTimeout(() => {
+        toast.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(100px)';
+
+        setTimeout(() => {
+          if (toast.parentNode) {
+            toast.parentNode.removeChild(toast);
+          }
+        }, 300); // Ждём окончания анимации
+      }, TOAST_DURATION);
+    }
+
+    // Показ статуса (статичный, не исчезает)
     function showStatus(message, type) {
       els.status.textContent = message;
       els.status.className = `status ${type}`;
-      
-      // Автоскрытие через 4 секунды
-      setTimeout(() => {
-        if (els.status.textContent === message) {
-          els.status.style.display = 'none';
-        }
-      }, 4000);
     }
 
     // ===== Обработчики событий =====
+
+    // Инициализируем input для файлов
+    initFileInput();
     
-    // Загрузка Markdown файла
-    els.loadMdBtn.addEventListener('click', loadMarkdownFile);
+    // Инициализируем Drag & Drop для панели
+    initPanelDragDrop();
+
+    // Загрузка файлов (один или несколько)
+    els.loadMdBtn.addEventListener('click', loadFiles);
+
+    // Добавить ещё файлы
+    document.getElementById('addMoreFilesBtn').addEventListener('click', loadFiles);
+
+    // Сортировать по имени
+    document.getElementById('sortByNameBtn').addEventListener('click', sortFilesByName);
+
+    // Очистить только очередь файлов
+    document.getElementById('clearFilesOnlyBtn').addEventListener('click', () => {
+      uploadedFiles = [];
+      renderFileList();
+      els.input.value = '';
+      els.preview.innerHTML = '';
+      els.copyBtn.disabled = true;
+      els.copyHtmlBtn.disabled = true;
+      els.downloadBtn.disabled = true;
+      updateStats();
+      showStatus('🗑️ Очередь файлов очищена', 'info');
+      showToast('🗑️ Очередь файлов очищена', 'info');
+    });
+
+    // Переключение показа имён файлов
+    document.getElementById('showFileNameCheckbox').addEventListener('change', () => {
+      if (uploadedFiles.length > 0) {
+        convertAllFiles();
+      }
+    });
 
     // Конвертация по кнопке
     els.convertBtn.addEventListener('click', () => convertMarkdown());
@@ -1078,22 +1587,27 @@ ${els.preview.innerHTML}
     els.styleToggle.addEventListener('change', () => {
       convertMarkdown();
       if (els.styleToggle.checked) {
+        showToast('📊 Стили для Word включены', 'info');
         showStatus('📊 Стили для Word включены (изображения встраиваются в документ)', 'info');
       } else {
+        showToast('🔓 Чистый вывод Showdown', 'info');
         showStatus('🔓 Чистый вывод Showdown', 'info');
       }
     });
     
     // ===== Инициализация при загрузке =====
     window.addEventListener('DOMContentLoaded', () => {
+      // Показываем пустой список файлов
+      renderFileList();
+
       // Загружаем пример
       els.input.value = defaultExample;
-      
+
       // Конвертируем сразу
       convertMarkdown();
-      
+
       // Показываем приветственное сообщение
-      showStatus('🎉 Пример загружен! Нажмите "Копировать" для вставки в Word', 'info');
+      showStatus('🎉 Готово к работе! Нажмите "Копировать DOC" для вставки в Word', 'info');
     });
   </script>
 </body>
