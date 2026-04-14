@@ -72,29 +72,6 @@ A single-page application (SPA) that runs entirely in your browser. Converts Mar
 - **Code formatting preserves indentation** by replacing spaces with `&nbsp;`
 - All data processed locally, works completely offline
 
-### Batch Processing (Node.js)
-
-For automation without a browser, use the CLI utilities:
-
-**`simple-batch-convert.js`** — no dependencies:
-```bash
-node simple-batch-convert.js ./docs output.html
-node simple-batch-convert.js ./docs output.html --separator=line
-```
-
-**`batch-convert.js`** — uses Showdown (requires `npm install showdown`):
-```bash
-npm install
-node batch-convert.js ./docs output.html --toc --sort=name
-```
-
-Options for `batch-convert.js`:
-- `--sort=name` — sort files by name
-- `--separator=page-break|line|none` — separator type between files
-- `--toc` — add table of contents
-- `--title="Title"` — document title
-- `--verbose` — detailed output
-
 ## Running
 
 ### Simple method (open file)
@@ -126,9 +103,6 @@ Then open: `http://localhost:8000`
 - `lib/showdown.min.js` – Markdown conversion library
 - `lib/icon256.png` – example image for embedding demonstration
 - `BigExample.md` – example of a complex Markdown document
-- `batch-convert.js` – batch conversion (requires showdown)
-- `simple-batch-convert.js` – batch conversion (no dependencies)
-- `package.json` – dependencies for Node.js scripts
 - `prompt.txt` – original requirements
 - `README_RU.md` – documentation in Russian
 

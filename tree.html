@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Дерево папок</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 24px;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            color: #333;
+            font-size: 24px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background: #45a049;
+        }
+
+        button.secondary {
+            background: #2196F3;
+        }
+
+        button.secondary:hover {
+            background: #1976D2;
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .folder-path {
+            color: #666;
+            font-size: 14px;
+            padding: 8px 12px;
+            background: #f0f0f0;
+            border-radius: 4px;
+            flex: 1;
+            min-width: 200px;
+            word-break: break-all;
+        }
+
+        .options {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+
+        .options label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #555;
+        }
+
+        .tree-output {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            padding: 16px;
+            border-radius: 4px;
+            overflow-x: auto;
+            white-space: pre;
+            min-height: 200px;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .tree-output:empty::before {
+            content: 'Выберите папку для построения дерева...';
+            color: #666;
+        }
+
+        .copy-btn {
+            position: relative;
+        }
+
+        .status {
+            color: #888;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Дерево папок</h1>
+        
+        <div class="controls">
+            <button id="selectFolder">Выбрать папку</button>
+            <div class="folder-path" id="folderPath">Папка не выбрана</div>
+        </div>
+
+        <div class="options">
+            <label>
+                <input type="checkbox" id="showFiles" checked>
+                Показывать файлы
+            </label>
+            <label>
+                <input type="checkbox" id="showHidden">
+                Показывать скрытые файлы
+            </label>
+        </div>
+
+        <div class="controls">
+            <button id="copyTree" class="secondary copy-btn" disabled>Копировать дерево</button>
+        </div>
+
+        <div class="tree-output" id="treeOutput"></div>
+        <div class="status" id="status"></div>
+    </div>
+
+    <script>
+        const selectFolderBtn = document.getElementById('selectFolder');
+        const copyTreeBtn = document.getElementById('copyTree');
+        const folderPathEl = document.getElementById('folderPath');
+        const treeOutput = document.getElementById('treeOutput');
+        const showFilesCheckbox = document.getElementById('showFiles');
+        const showHiddenCheckbox = document.getElementById('showHidden');
+        const statusEl = document.getElementById('status');
+
+        let currentHandle = null;
+
+        // === IndexedDB для сохранения дескриптора папки ===
+        const DB_NAME = 'FolderTreeDB';
+        const STORE_NAME = 'folderHandles';
+        const DB_VERSION = 1;
+
+        function openDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open(DB_NAME, DB_VERSION);
+                request.onupgradeneeded = (e) => {
+                    e.target.result.createObjectStore(STORE_NAME);
+                };
+                request.onsuccess = (e) => resolve(e.target.result);
+                request.onerror = (e) => reject(e.target.error);
+            });
+        }
+
+        async function saveFolderHandle(handle) {
+            const db = await openDB();
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction(STORE_NAME, 'readwrite');
+                tx.objectStore(STORE_NAME).put(handle, 'lastFolder');
+                tx.oncomplete = () => resolve();
+                tx.onerror = (e) => reject(e.target.error);
+            });
+        }
+
+        async function loadFolderHandle() {
+            const db = await openDB();
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction(STORE_NAME, 'readonly');
+                const request = tx.objectStore(STORE_NAME).get('lastFolder');
+                request.onsuccess = () => resolve(request.result);
+                request.onerror = (e) => reject(e.target.error);
+            });
+        }
+
+        // Проверка и запрос разрешения на доступ к папке
+        async function verifyPermission(handle) {
+            if (!handle) return false;
+            const opts = { mode: 'read' };
+            // Проверяем, есть ли уже разрешение
+            if (await handle.queryPermission(opts) === 'granted') {
+                return true;
+            }
+            // Запрашиваем разрешение
+            if (await handle.requestPermission(opts) === 'granted') {
+                return true;
+            }
+            return false;
+        }
+
+        // Восстановление последней папки при загрузке
+        async function restoreLastFolder() {
+            try {
+                const handle = await loadFolderHandle();
+                if (handle) {
+                    const hasPermission = await verifyPermission(handle);
+                    if (hasPermission) {
+                        currentHandle = handle;
+                        folderPathEl.textContent = handle.name;
+                        statusEl.textContent = 'Построение дерева...';
+                        await buildTree(handle);
+                        copyTreeBtn.disabled = false;
+                        statusEl.textContent = 'Восстановлена последняя папка';
+                        return true;
+                    }
+                }
+            } catch (e) {
+                console.warn('Не удалось восстановить папку:', e);
+            }
+            return false;
+        }
+
+        restoreLastFolder();
+
+        // Выбор папки
+        selectFolderBtn.addEventListener('click', async () => {
+            try {
+                if (!window.showDirectoryPicker) {
+                    alert('Ваш браузер не поддерживает File System Access API. Используйте Chrome, Edge или Opera.');
+                    return;
+                }
+
+                // Если есть сохранённая папка — открываем её, иначе — диалог выбора
+                let dirHandle;
+                const savedHandle = await loadFolderHandle();
+                if (savedHandle) {
+                    dirHandle = await window.showDirectoryPicker({ startIn: savedHandle });
+                } else {
+                    dirHandle = await window.showDirectoryPicker();
+                }
+
+                currentHandle = dirHandle;
+                await saveFolderHandle(dirHandle);
+                folderPathEl.textContent = dirHandle.name;
+
+                statusEl.textContent = 'Построение дерева...';
+                await buildTree(dirHandle);
+
+                copyTreeBtn.disabled = false;
+                statusEl.textContent = 'Готово';
+            } catch (err) {
+                if (err.name !== 'AbortError') {
+                    console.error(err);
+                    statusEl.textContent = 'Ошибка: ' + err.message;
+                }
+            }
+        });
+
+        // Построение дерева
+        async function buildTree(dirHandle) {
+            const showFiles = showFilesCheckbox.checked;
+            const showHidden = showHiddenCheckbox.checked;
+            
+            const tree = await readDirectory(dirHandle, '', showFiles, showHidden);
+            treeOutput.textContent = tree;
+        }
+
+        // Рекурсивное чтение директории
+        async function readDirectory(dirHandle, prefix, showFiles, showHidden) {
+            let result = '';
+            const entries = [];
+            
+            for await (const entry of dirHandle.values()) {
+                if (!showHidden && entry.name.startsWith('.')) {
+                    continue;
+                }
+                entries.push(entry);
+            }
+            
+            // Сортируем: папки primero, потом файлы
+            entries.sort((a, b) => {
+                if (a.kind !== b.kind) {
+                    return a.kind === 'directory' ? -1 : 1;
+                }
+                return a.name.localeCompare(b.name);
+            });
+
+            for (let i = 0; i < entries.length; i++) {
+                const entry = entries[i];
+                const isLast = i === entries.length - 1;
+                const connector = isLast ? '└── ' : '├── ';
+                
+                result += prefix + connector + entry.name + '\n';
+                
+                if (entry.kind === 'directory') {
+                    const childPrefix = prefix + (isLast ? '    ' : '│   ');
+                    try {
+                        result += await readDirectory(entry, childPrefix, showFiles, showHidden);
+                    } catch (err) {
+                        result += childPrefix + '[Нет доступа]\n';
+                    }
+                }
+            }
+            
+            return result;
+        }
+
+        // Копирование в буфер обмена
+        copyTreeBtn.addEventListener('click', async () => {
+            const text = treeOutput.textContent;
+            if (text) {
+                try {
+                    await navigator.clipboard.writeText(text);
+                    const originalText = copyTreeBtn.textContent;
+                    copyTreeBtn.textContent = 'Скопировано!';
+                    setTimeout(() => {
+                        copyTreeBtn.textContent = originalText;
+                    }, 2000);
+                } catch (err) {
+                    statusEl.textContent = 'Ошибка копирования: ' + err.message;
+                }
+            }
+        });
+
+        // Перестроение при изменении настроек
+        showFilesCheckbox.addEventListener('change', () => {
+            if (currentHandle) {
+                buildTree(currentHandle);
+            }
+        });
+
+        showHiddenCheckbox.addEventListener('change', () => {
+            if (currentHandle) {
+                buildTree(currentHandle);
+            }
+        });
+    </script>
+</body>
+</html>

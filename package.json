@@ -2,11 +2,8 @@
   "name": "md2word",
   "version": "1.0.0",
   "description": "Конвертер Markdown в Word-совместимый HTML с поддержкой множественной обработки файлов",
-  "main": "batch-convert.js",
   "scripts": {
-    "batch": "node batch-convert.js",
-    "server": "python -m http.server 8000",
-    "help": "node batch-convert.js --help"
+    "server": "python -m http.server 8000"
   },
   "keywords": [
     "markdown",
@@ -16,8 +13,5 @@
     "batch"
   ],
   "author": "",
-  "license": "MIT",
-  "dependencies": {
-    "showdown": "^2.1.0"
-  }
+  "license": "MIT"
 }

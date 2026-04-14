@@ -6,7 +6,10 @@
   <title>Markdown → Word Converter</title>
   <script src="lib/showdown.min.js"></script>
   <style>
+    /* ===== Сброс стилей ===== */
     * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ===== Фон страницы ===== */
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       max-width: 1400px;
@@ -15,27 +18,37 @@
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       min-height: 100vh;
     }
+
+    /* ===== Белая обёртка контента ===== */
     .wrapper {
       background: #fff;
       border-radius: 12px;
       padding: 25px;
       box-shadow: 0 10px 40px rgba(0,0,0,0.2);
     }
-    h1 { 
-      text-align: center; 
-      color: #333; 
+
+    /* ===== Главный заголовок ===== */
+    h1 {
+      text-align: center;
+      color: #333;
       margin-bottom: 20px;
       font-size: 1.8rem;
     }
+
+    /* ===== Сетка: два столбца (ввод + предпросмотр) ===== */
     .container {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 20px;
       margin-bottom: 20px;
     }
+
+    /* ===== На узких экранах — один столбец ===== */
     @media (max-width: 1000px) {
       .container { grid-template-columns: 1fr; }
     }
+
+    /* ===== Панель (блок с рамкой и фоном) ===== */
     .panel {
       background: #fafafa;
       border: 2px solid #e0e0e0;
@@ -44,6 +57,8 @@
       display: flex;
       flex-direction: column;
     }
+
+    /* ===== Заголовок панели с названием и счётчиком ===== */
     .panel-header {
       display: flex;
       justify-content: space-between;
@@ -52,15 +67,20 @@
       padding-bottom: 10px;
       border-bottom: 1px solid #eee;
     }
-    .panel h3 { 
-      margin: 0; 
-      color: #555; 
+
+    .panel h3 {
+      margin: 0;
+      color: #555;
       font-size: 1.1rem;
     }
+
+    /* ===== Счётчик символов/слов ===== */
     .char-count {
       font-size: 12px;
       color: #888;
     }
+
+    /* ===== Текстовое поле ввода и область предпросмотра ===== */
     textarea, #preview {
       width: 100%;
       min-height: 500px;
@@ -73,11 +93,15 @@
       resize: vertical;
       flex: 1;
     }
+
+    /* ===== Подсветка textarea при фокусе ===== */
     textarea:focus {
       outline: none;
       border-color: #667eea;
       box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
     }
+
+    /* ===== Область предпросмотра: прокрутка, шрифт как в Word ===== */
     #preview {
       overflow-y: auto;
       background: #fff;
@@ -85,8 +109,9 @@
       font-size: 11pt;
       line-height: 1.15;
     }
-    /* Стили для предпросмотра */
-    #preview h1, #preview h2, #preview h3, 
+
+    /* ===== Стили заголовков H1-H6 в предпросмотре ===== */
+    #preview h1, #preview h2, #preview h3,
     #preview h4, #preview h5, #preview h6 {
       margin: 0.8em 0 0.4em;
       color: #333;
@@ -97,12 +122,17 @@
     #preview h4 { font-size: 1.1em; color: #555; }
     #preview h5 { font-size: 1em; color: #666; font-style: italic; }
     #preview h6 { font-size: 0.9em; color: #777; font-style: italic; }
+
     #preview p { margin: 0.5em 0; }
-    #preview ul, #preview ol { 
-      margin: 0.5em 0; 
-      padding-left: 2em; 
+
+    /* ===== Списки в предпросмотре ===== */
+    #preview ul, #preview ol {
+      margin: 0.5em 0;
+      padding-left: 2em;
     }
     #preview li { margin: 0.3em 0; }
+
+    /* ===== Блок кода (pre) в предпросмотре ===== */
     #preview pre {
       background: #f3f4f6;
       padding: 12px;
@@ -117,6 +147,8 @@
       white-space: pre-wrap;
       word-wrap: break-word;
     }
+
+    /* ===== Инлайн-код в предпросмотре ===== */
     #preview code {
       background: #f3f4f6;
       padding: 2px 6px;
@@ -126,12 +158,16 @@
       color: #dc2626;
       border: 0.5pt solid #e5e7eb;
     }
+
+    /* ===== Код внутри pre — без дополнительных стилей ===== */
     #preview pre code {
       background: none;
       padding: 0;
       border: none;
       color: #1f2937;
     }
+
+    /* ===== Таблицы в предпросмотре ===== */
     #preview table {
       border-collapse: collapse;
       width: 100%;
@@ -142,10 +178,12 @@
       padding: 8px 12px;
       text-align: left;
     }
-    #preview th { 
-      background: #f5f5f5; 
+    #preview th {
+      background: #f5f5f5;
       font-weight: 600;
     }
+
+    /* ===== Цитаты (blockquote) в предпросмотре ===== */
     #preview blockquote {
       border-left: 4px solid #667eea;
       margin: 1em 0;
@@ -153,22 +191,31 @@
       background: #f9f9ff;
       color: #555;
     }
+
+    /* ===== Ссылки в предпросмотре ===== */
     #preview a {
       color: #0366d6;
       text-decoration: none;
     }
     #preview a:hover { text-decoration: underline; }
+
+    /* ===== Зачёркнутый текст в предпросмотре ===== */
     #preview del, #preview s {
       text-decoration: line-through;
       color: #666;
     }
+
+    /* ===== Изображения в предпросмотре ===== */
     #preview img { max-width: 256px; height: auto; display: block; margin: 8px 0; }
+
+    /* ===== Горизонтальная линия-разделитель ===== */
     #preview hr {
       border: none;
       border-top: 2px solid #eee;
       margin: 1.5em 0;
     }
-    
+
+    /* ===== Панель кнопок управления ===== */
     .controls {
       display: flex;
       gap: 12px;
@@ -179,6 +226,8 @@
       background: #f8f9fa;
       border-radius: 8px;
     }
+
+    /* ===== Основная кнопка ===== */
     button {
       padding: 12px 24px;
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -197,11 +246,15 @@
       transform: translateY(-2px);
       box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
     }
+
+    /* ===== Отключённая кнопка ===== */
     button:disabled {
       background: #ccc;
       cursor: not-allowed;
       transform: none;
     }
+
+    /* ===== Второстепенная (серая) кнопка ===== */
     button.secondary {
       background: #6c757d;
     }
@@ -209,6 +262,8 @@
       background: #545b62;
       box-shadow: 0 4px 12px rgba(108, 117, 125, 0.4);
     }
+
+    /* ===== Кнопка успеха (зелёная) ===== */
     button.success {
       background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
     }
@@ -216,7 +271,11 @@
       box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
     }
 
-    /* Стили для панели очереди файлов */
+    /* ========================================
+       СТИЛИ ПАНЕЛИ ОЧЕРЕДИ ФАЙЛОВ
+       ======================================== */
+
+    /* ===== Контейнер панели очереди файлов (пунктирная рамка) ===== */
     .multi-file-panel {
       margin: 15px 0;
       padding: 20px;
@@ -225,12 +284,16 @@
       border-radius: 8px;
       transition: all 0.3s ease;
     }
+
+    /* ===== Состояние панели при наведении файла (перетаскивание) ===== */
     .multi-file-panel.drag-over {
       background: #e8edff;
       border-color: #4338ca;
       border-style: solid;
       transform: scale(1.01);
     }
+
+    /* ===== Заголовок панели очереди ===== */
     .multi-file-header {
       display: flex;
       justify-content: space-between;
@@ -242,6 +305,8 @@
       color: #333;
       font-size: 1.2rem;
     }
+
+    /* ===== Список файлов (прокручиваемый контейнер) ===== */
     .file-list {
       max-height: 300px;
       overflow-y: auto;
@@ -249,6 +314,8 @@
       border-radius: 6px;
       background: #fff;
     }
+
+    /* ===== Отдельный элемент списка (файл) ===== */
     .file-item {
       display: flex;
       align-items: center;
@@ -263,6 +330,8 @@
     .file-item:hover {
       background: #f0f4ff;
     }
+
+    /* ===== Номер файла в очереди (круглый значок) ===== */
     .file-number {
       background: #667eea;
       color: white;
@@ -276,6 +345,8 @@
       font-weight: bold;
       flex-shrink: 0;
     }
+
+    /* ===== Информация о файле (имя + размер) ===== */
     .file-info {
       flex: 1;
       min-width: 0;
@@ -291,11 +362,15 @@
       font-size: 12px;
       color: #888;
     }
+
+    /* ===== Кнопки управления файлом (↑ ↓ ✕) ===== */
     .file-controls {
       display: flex;
       gap: 4px;
       flex-shrink: 0;
     }
+
+    /* ===== Кнопки перемещения (вверх/вниз) ===== */
     .file-move-btn {
       background: #667eea;
       color: white;
@@ -318,6 +393,8 @@
       background: #ccc;
       cursor: not-allowed;
     }
+
+    /* ===== Кнопка удаления файла (✕) ===== */
     .file-remove {
       background: #dc3545;
       color: white;
@@ -336,6 +413,8 @@
     .file-remove:hover {
       background: #c82333;
     }
+
+    /* ===== Контейнер кнопок под списком файлов ===== */
     .file-list-controls {
       display: flex;
       gap: 10px;
@@ -348,7 +427,11 @@
       font-size: 13px;
     }
     
-    /* Стили для toast-уведомлений */
+    /* ========================================
+       СТИЛИ TOAST-УВЕДОМЛЕНИЙ (всплывающие сообщения)
+       ======================================== */
+
+    /* ===== Контейнер для toast-уведомлений (правый верхний угол) ===== */
     .toast-container {
       position: fixed;
       top: 20px;
@@ -359,6 +442,8 @@
       gap: 8px;
       pointer-events: none;
     }
+
+    /* ===== Отдельное toast-уведомление ===== */
     .toast {
       padding: 12px 20px;
       border-radius: 8px;
@@ -369,26 +454,39 @@
       max-width: 350px;
       pointer-events: auto;
     }
+
+    /* ===== Успешное уведомление (зелёное) ===== */
     .toast.success {
       background: #d4edda;
       color: #155724;
       border-left: 4px solid #28a745;
     }
+
+    /* ===== Ошибка (красное) ===== */
     .toast.error {
       background: #f8d7da;
       color: #721c24;
       border-left: 4px solid #dc3545;
     }
+
+    /* ===== Информационное (синее) ===== */
     .toast.info {
       background: #cce5ff;
       color: #004085;
       border-left: 4px solid #007bff;
     }
+
+    /* ===== Анимация появления toast (выезжает справа) ===== */
     @keyframes toastIn {
       from { opacity: 0; transform: translateX(100px); }
       to { opacity: 1; transform: translateX(0); }
     }
 
+    /* ========================================
+       СТИЛИ СТАТУС-БАРА (полоска состояния)
+       ======================================== */
+
+    /* ===== Полоска состояния под панелью файлов ===== */
     .status {
       text-align: center;
       padding: 12px 20px;
@@ -404,26 +502,39 @@
       color: #888;
       border: 1px solid #ddd;
     }
+
+    /* ===== Анимация появления статус-бара (сверху) ===== */
     @keyframes slideIn {
       from { opacity: 0; transform: translateY(-10px); }
       to { opacity: 1; transform: translateY(0); }
     }
+
+    /* ===== Статус: успех (зелёный) ===== */
     .status.success {
       background: #d4edda;
       color: #155724;
       border: 1px solid #c3e6cb;
     }
+
+    /* ===== Статус: ошибка (красный) ===== */
     .status.error {
       background: #f8d7da;
       color: #721c24;
       border: 1px solid #f5c6cb;
     }
+
+    /* ===== Статус: информация (синий) ===== */
     .status.info {
       background: #cce5ff;
       color: #004085;
       border: 1px solid #b8daff;
     }
-    
+
+    /* ========================================
+       ПРОЧИЕ СТИЛИ (подсказка, футер, вложенные списки)
+       ======================================== */
+
+    /* ===== Подсказка-инструкция под предпросмотром ===== */
     .hint {
       font-size: 13px;
       color: #666;
@@ -433,7 +544,8 @@
       border-radius: 6px;
       border-left: 4px solid #667eea;
     }
-    
+
+    /* ===== Футер (копирайт внизу страницы) ===== */
     .footer {
       text-align: center;
       margin-top: 20px;
@@ -442,9 +554,9 @@
       color: #888;
       font-size: 12px;
     }
-    
-    /* Стили для вложенных списков в предпросмотре */
-    #preview ul ul, #preview ol ol, 
+
+    /* ===== Вложенные списки в предпросмотре (уменьшенный отступ) ===== */
+    #preview ul ul, #preview ol ol,
     #preview ul ol, #preview ol ul {
       margin: 0.2em 0;
     }
@@ -528,36 +640,43 @@
   </div>
 
   <script>
-    // ===== Инициализация =====
+    /* =============================================
+       ИНИЦИАЛИЗАЦИЯ КОНВЕРТЕРА SHOWDOWN
+       Создаём парсер Markdown → HTML с нужными опциями
+       ============================================= */
     const converter = new showdown.Converter({
-      tables: true,
-      tasklists: true,
-      strikethrough: true,
-      ghCodeBlocks: true,
-      simpleLineBreaks: true,
-      parseImgDimensions: true,
-      headerLevelStart: 1,
-      simplifiedAutoLink: true,
-      excludeTrailingPunctuationFromURLs: true,
-      literalMidWordUnderscores: true,
-      completeHTMLDocument: false,
-      disableForced4SpacesIndentedSublists: true
+      tables: true,                              // Поддержка таблиц
+      tasklists: true,                           // Поддержка чекбоксов (- [x])
+      strikethrough: true,                       // Поддержка зачёркивания (~~текст~~)
+      ghCodeBlocks: true,                        // Блоки кода в стиле GitHub (```...)
+      simpleLineBreaks: true,                    // Перенос строки по одному \n
+      parseImgDimensions: true,                  // Парсинг размеров изображений
+      headerLevelStart: 1,                       // Начальный уровень заголовков
+      simplifiedAutoLink: true,                  // Автоопределение ссылок
+      excludeTrailingPunctuationFromURLs: true,  // Исключение знаков препинания из URL
+      literalMidWordUnderscores: true,           // Подчёркивания внутри слов как символы
+      completeHTMLDocument: false,               // Не оборачивать в полный HTML-документ
+      disableForced4SpacesIndentedSublists: true // Не требовать 4 пробела для вложенных списков
     });
 
-    // DOM элементы
+    /* =============================================
+       КЭШИРОВАНИЕ DOM-ЭЛЕМЕНТОВ
+       Собираем все нужные элементы в один объект
+       для удобного доступа через els.*
+       ============================================= */
     const els = {
-      input: document.getElementById('markdownInput'),
-      preview: document.getElementById('preview'),
-      convertBtn: document.getElementById('convertBtn'),
-      copyBtn: document.getElementById('copyBtn'),
-      copyHtmlBtn: document.getElementById('copyHtmlBtn'),
-      downloadBtn: document.getElementById('downloadBtn'),
-      loadMdBtn: document.getElementById('loadMdBtn'),
-      clearBtn: document.getElementById('clearBtn'),
-      styleToggle: document.getElementById('styleToggle'),
-      status: document.getElementById('status'),
-      charCount: document.getElementById('charCount'),
-      wordCount: document.getElementById('wordCount')
+      input:       document.getElementById('markdownInput'),   // Поле ввода Markdown
+      preview:     document.getElementById('preview'),         // Область предпросмотра
+      convertBtn:  document.getElementById('convertBtn'),      // Кнопка «Конвертировать»
+      copyBtn:     document.getElementById('copyBtn'),         // Кнопка «Копировать DOC»
+      copyHtmlBtn: document.getElementById('copyHtmlBtn'),     // Кнопка «Копировать HTML»
+      downloadBtn: document.getElementById('downloadBtn'),     // Кнопка «Скачать HTML»
+      loadMdBtn:   document.getElementById('loadMdBtn'),       // Кнопка «Загрузить файл»
+      clearBtn:    document.getElementById('clearBtn'),        // Кнопка «Очистить всё»
+      styleToggle: document.getElementById('styleToggle'),     // Чекбокс «Стили для Word»
+      status:      document.getElementById('status'),          // Полоска статус-бара
+      charCount:   document.getElementById('charCount'),       // Счётчик символов
+      wordCount:   document.getElementById('wordCount')        // Счётчик слов
     };
 
     // Пример с многоуровневыми списками (4+ уровня)
@@ -565,6 +684,17 @@
 
 ## 📋 Введение
 Это **пример конвертации** Markdown в формат, совместимый с *Microsoft Word*.
+
+### 📐 Все уровни заголовков (H1–H6)
+
+# Заголовок H1 — основной заголовок документа
+## Заголовок H2 — раздел
+### Заголовок H3 — подраздел
+#### Заголовок H4 — детальный подраздел
+##### Заголовок H5 — дополнительный уровень
+###### Заголовок H6 — самый мелкий уровень
+
+> 💡 Все 6 уровней заголовков поддерживаются и конвертируются с соответствующими стилями для Word.
 
 ### Основные возможности:
 - ✅ Конвертация заголовков всех уровней
@@ -681,28 +811,36 @@ function processData(data) {
 *Сгенерировано локально • [markdown2word converter](https://github.com)*
 `;
 
-    // ===== Функции =====
-
-    // Массив для хранения загруженных файлов
+    /* =============================================
+       ГЛОБАЛЬНОЕ СОСТОЯНИЕ
+       uploadedFiles — массив загруженных файлов
+       Каждый элемент: { name: имя, content: содержимое, size: размер }
+       ============================================= */
     let uploadedFiles = [];
 
-    // Инициализация Drag & Drop для панели (загрузка файлов из проводника)
+    /* =============================================
+       INITPANELDRAGDROP() — ИНИЦИАЛИЗАЦИЯ DRAG & DROP
+       Позволяет перетаскивать файлы из проводника
+       прямо на панель очереди файлов
+       ============================================= */
     function initPanelDragDrop() {
       const panel = document.getElementById('multiFilePanel');
 
+      // Событие: файл наведён на панель — подсвечиваем рамку
       panel.addEventListener('dragover', (e) => {
         e.preventDefault();
         e.stopPropagation();
-        // Проверяем, что это файлы из проводника (не внутренние элементы)
+        // Подсвечиваем панель, только если это файлы (не текст и т.д.)
         if (e.dataTransfer.types.includes('Files')) {
           panel.classList.add('drag-over');
         }
       });
 
+      // Событие: файл покинул панель — убираем подсветку
       panel.addEventListener('dragleave', (e) => {
         e.preventDefault();
         e.stopPropagation();
-        // Проверяем, что курсор действительно покинул панель
+        // Проверяем, что курсор действительно вышел за пределы панели
         const rect = panel.getBoundingClientRect();
         const x = e.clientX;
         const y = e.clientY;
@@ -711,6 +849,7 @@ function processData(data) {
         }
       });
 
+      // Событие: файл брошен на панель — загружаем
       panel.addEventListener('drop', (e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -719,7 +858,7 @@ function processData(data) {
         const files = Array.from(e.dataTransfer.files);
         if (files.length === 0) return;
 
-        // Фильтруем только markdown файлы
+        // Фильтруем только Markdown-файлы (.md, .markdown, .txt)
         const mdFiles = files.filter(file => {
           const ext = file.name.toLowerCase();
           return ext.endsWith('.md') || ext.endsWith('.markdown') || ext.endsWith('.txt');
@@ -733,6 +872,7 @@ function processData(data) {
         let loadedCount = 0;
         let errorCount = 0;
 
+        // Читаем каждый файл через FileReader
         mdFiles.forEach(file => {
           const reader = new FileReader();
           reader.onload = (event) => {
@@ -743,6 +883,7 @@ function processData(data) {
             });
             loadedCount++;
 
+            // Когда все файлы загружены — перерисовываем список и конвертируем
             if (loadedCount + errorCount === mdFiles.length) {
               renderFileList();
               showToast(`📂 Перетащено файлов: ${loadedCount}`, 'info');
@@ -759,17 +900,19 @@ function processData(data) {
         });
       });
 
-      // Предотвращаем открытие файлов при drop вне панели
+      // Предотвращаем открытие файлов браузером при случайном drop вне панели
       document.addEventListener('dragover', (e) => {
         e.preventDefault();
       });
-
       document.addEventListener('drop', (e) => {
         e.preventDefault();
       });
     }
 
-    // Обработчик для input файлов (один раз при старте)
+    /* =============================================
+       INITFILEINPUT() — ОБРАБОТКА ВЫБОРА ФАЙЛОВ
+       через стандартный диалог (кнопка «Загрузить»)
+       ============================================= */
     function initFileInput() {
       const fileInput = document.getElementById('fileInput');
 
@@ -790,10 +933,10 @@ function processData(data) {
             });
             loadedCount++;
 
+            // Все файлы прочитаны — обновляем список и конвертируем
             if (loadedCount + errorCount === files.length) {
               renderFileList();
               showToast(`📂 Загружено файлов: ${loadedCount}`, 'info');
-              // Автоматически объединяем и конвертируем
               convertAllFiles();
             }
           };
@@ -808,18 +951,28 @@ function processData(data) {
       });
     }
 
-    // Загрузка файлов (один или несколько)
+    /* =============================================
+       LOADFILES() — ОТКРЫВАЕТ ДИАЛОГ ВЫБОРА ФАЙЛОВ
+       Предварительно сбрасывает value, чтобы
+       можно было выбрать тот же файл повторно
+       ============================================= */
     function loadFiles() {
       const fileInput = document.getElementById('fileInput');
       fileInput.value = ''; // Сброс предыдущего выбора
       fileInput.click();
     }
 
-    // Отображение списка файлов
+    /* =============================================
+       RENDERFILELIST() — ОТРИСОВКА СПИСКА ФАЙЛОВ
+       Создаёт DOM-элементы для каждого файла
+       в очереди: номер, имя, размер, кнопки ↑↓✕
+       Если файлов нет — показывает заглушку
+       ============================================= */
     function renderFileList() {
       const fileList = document.getElementById('fileList');
       fileList.innerHTML = '';
 
+      // Если файлов нет — показываем пустое состояние
       if (uploadedFiles.length === 0) {
         fileList.innerHTML = `
           <div style="padding: 30px 20px; text-align: center; color: #888;">
@@ -831,6 +984,7 @@ function processData(data) {
         return;
       }
 
+      // Для каждого файла создаём элемент списка
       uploadedFiles.forEach((file, index) => {
         const item = document.createElement('div');
         item.className = 'file-item';
@@ -849,7 +1003,7 @@ function processData(data) {
           </div>
         `;
 
-        // Кнопки перемещения
+        // Обработчики кнопок перемещения (↑ ↓)
         item.querySelectorAll('.file-move-btn').forEach(btn => {
           btn.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -859,18 +1013,17 @@ function processData(data) {
           });
         });
 
-        // Кнопка удаления
+        // Обработчик кнопки удаления (✕)
         item.querySelector('.file-remove').addEventListener('click', (e) => {
           e.stopPropagation();
           const idx = parseInt(e.target.dataset.index);
           uploadedFiles.splice(idx, 1);
           renderFileList();
-          // Автоматически конвертируем после удаления
+          // Если файлов больше нет — очищаем всё
           if (uploadedFiles.length > 0) {
-            showToast(`🗑️ Файл удалён`, 'info');
+            showToast('🗑️ Файл удалён', 'info');
             convertAllFiles();
           } else {
-            // Если файлов больше нет - очищаем всё
             els.input.value = '';
             els.preview.innerHTML = '';
             els.copyBtn.disabled = true;
@@ -886,42 +1039,58 @@ function processData(data) {
       });
     }
 
-    // Перемещение файла вверх или вниз
+    /* =============================================
+       MOVEFILE(INDEX, DIRECTION) — ПЕРЕМЕЩЕНИЕ ФАЙЛА
+       Меняет файл местами с соседним (вверх/вниз)
+       После перемещения автоматически пере-конвертирует
+       ============================================= */
     function moveFile(index, direction) {
       const newIndex = direction === 'up' ? index - 1 : index + 1;
-      
+
+      // Проверка: не выходим ли за границы массива
       if (newIndex < 0 || newIndex >= uploadedFiles.length) {
         return;
       }
 
-      // Меняем местами элементы
+      // Обмен местами через временную переменную
       const temp = uploadedFiles[index];
       uploadedFiles[index] = uploadedFiles[newIndex];
       uploadedFiles[newIndex] = temp;
-      
+
       renderFileList();
       showToast('📑 Порядок файлов изменён', 'info');
-      // Автоматически конвертируем после изменения порядка
-      convertAllFiles();
+      convertAllFiles(); // Авто-конвертация после изменения порядка
     }
 
-    // Форматирование размера файла
+    /* =============================================
+       FORMATFILESIZE(BYTES) — ФОРМАТИРОВАНИЕ РАЗМЕРА
+       Переводит байты в читаемый вид: Б, КБ, МБ
+       ============================================= */
     function formatFileSize(bytes) {
       if (bytes < 1024) return bytes + ' Б';
       if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' КБ';
       return (bytes / (1024 * 1024)).toFixed(1) + ' МБ';
     }
 
-    // Сортировка файлов по имени
+    /* =============================================
+       SORTFILESBYNAME() — СОРТИРОВКА ПО ИМЕНИ
+       Сортирует массив uploadedFiles алфавитно
+       с учётом русской локали
+       ============================================= */
     function sortFilesByName() {
       uploadedFiles.sort((a, b) => a.name.localeCompare(b.name, 'ru'));
       renderFileList();
       showToast('🔤 Файлы отсортированы по имени', 'info');
-      // Автоматически конвертируем после сортировки
-      convertAllFiles();
+      convertAllFiles(); // Авто-конвертация после сортировки
     }
 
-    // Объединение и конвертация всех файлов
+    /* =============================================
+       CONVERTALLFILES() — ОБЪЕДИНЕНИЕ И КОНВЕРТАЦИЯ
+       Склеивает все файлы из очереди в один текст,
+       помещает в поле ввода и запускает конвертацию
+       Если включена опция — добавляет заголовки с именами файлов
+       и разрывы страниц между файлами
+       ============================================= */
     function convertAllFiles() {
       if (uploadedFiles.length === 0) {
         showToast('❌ Нет загруженных файлов', 'error');
@@ -929,26 +1098,23 @@ function processData(data) {
         return;
       }
 
-      showStatus(`🔄 Конвертация...`, 'info');
+      showStatus('🔄 Конвертация...', 'info');
 
       // Проверяем, нужно ли показывать имена файлов
       const showFileName = document.getElementById('showFileNameCheckbox').checked;
 
       // Объединяем все файлы с разделителями и заголовками
       let combinedContent = '';
-      
+
       uploadedFiles.forEach((file, index) => {
-        // Добавляем заголовок файла, если чекбокс включён
         if (showFileName) {
           if (index > 0) {
-            // Разрыв страницы перед новым файлом
+            // Разрыв страницы перед новым файлом (CSS page-break)
             combinedContent += '\n\n<div style="page-break-after: always; margin: 40px 0;"></div>\n\n';
           }
-          
-          // Добавляем заголовок с именем файла
+          // Заголовок с именем файла
           combinedContent += `# 📄 ${file.name}\n\n`;
         }
-        
         combinedContent += file.content;
       });
 
@@ -956,9 +1122,9 @@ function processData(data) {
       els.input.value = combinedContent;
       updateStats();
 
-      // Конвертируем
+      // Запускаем конвертацию
       convertMarkdown().then(() => {
-        const fileCountMsg = showFileName 
+        const fileCountMsg = showFileName
           ? `✅ Готово! Файлов объединено: ${uploadedFiles.length} (с именами)`
           : `✅ Готово! Файлов объединено: ${uploadedFiles.length}`;
         showToast(fileCountMsg, 'success');
@@ -966,22 +1132,33 @@ function processData(data) {
       });
     }
 
-    // Конвертация Markdown → HTML с Word-совместимыми стилями
+    /* =============================================
+       CONVERTMARKDOWN() — ОСНОВНАЯ КОНВЕРТАЦИЯ
+       1. Markdown → HTML через Showdown
+       2. Если включены «Стили для Word»:
+          a) Конвертирует изображения в base64
+          b) Применяет inline-стили для Word
+       3. Вставляет результат в предпросмотр
+       4. Разблокирует кнопки экспорта
+       ============================================= */
     async function convertMarkdown() {
       try {
         const md = els.input.value;
-        let html = converter.makeHtml(md);
+        let html = converter.makeHtml(md); // Showdown: Markdown → HTML
 
-        // Если включена опция - добавляем стили для Word
+        // Если включена опция «Стили для Word» — обрабатываем дополнительно
         if (els.styleToggle.checked) {
-          // Сначала конвертируем изображения в base64
+          // Конвертируем изображения в base64 (для встраивания в Word)
           html = await convertImagesToBase64(html);
+          // Применяем inline-стили для совместимости с Word
           html = applyWordStyles(html);
         }
 
-        // Просто берём чистый HTML от showdown, без дополнительных стилей
+        // Вставляем результат в область предпросмотра
         els.preview.innerHTML = html;
         updateStats();
+
+        // Разблокируем кнопки экспорта
         els.copyBtn.disabled = false;
         els.copyHtmlBtn.disabled = false;
         els.downloadBtn.disabled = false;
@@ -994,7 +1171,13 @@ function processData(data) {
       }
     }
 
-    // Конвертация изображений в base64 для встраивания в Word
+    /* =============================================
+       CONVERTIMAGESTOBASE64(HTML) — ВСТРАИВАНИЕ ИЗОБРАЖЕНИЙ
+       Находит все <img> в HTML, загружает их через fetch,
+       конвертирует в base64 и подставляет в src.
+       Это нужно, чтобы изображения работали в Word
+       даже без подключения к интернету.
+       ============================================= */
     async function convertImagesToBase64(html) {
       const temp = document.createElement('div');
       temp.innerHTML = html;
@@ -1003,12 +1186,13 @@ function processData(data) {
       let successCount = 0;
       let failCount = 0;
 
+      // Создаём Promise для каждого изображения
       const promises = Array.from(images).map(async (img) => {
         const src = img.getAttribute('src');
         if (!src) return;
 
         try {
-          // Пробуем загрузить изображение через fetch
+          // Загружаем изображение через fetch
           const response = await fetch(src);
           if (!response.ok) {
             failCount++;
@@ -1017,62 +1201,77 @@ function processData(data) {
           }
 
           const blob = await response.blob();
-          
+
           // Проверяем, что это действительно изображение
           if (!blob.type.startsWith('image/')) {
             failCount++;
             console.warn(`${src} не является изображением`);
             return;
           }
-          
+
+          // Конвертируем Blob → base64 Data URL
           const base64 = await blobToBase64(blob);
-          
+
           // Заменяем src на base64
           img.setAttribute('src', base64);
           successCount++;
         } catch (err) {
           failCount++;
           console.warn(`Не удалось загрузить изображение ${src}:`, err.message);
-          // Если не удалось загрузить, оставляем оригинальный src
+          // Если не удалось загрузить — оставляем оригинальный src
         }
       });
 
-      // Ждём загрузки всех изображений
+      // Ждём загрузки всех изображений параллельно
       await Promise.all(promises);
-      
-      // Показываем статус загрузки изображений
+
+      // Показываем статус загрузки
       if (failCount > 0 && successCount === 0) {
         showToast('⚠️ Изображения не загружаются. Запустите локальный сервер', 'error');
       } else if (successCount > 0) {
         showToast(`✅ Изображений встроено: ${successCount}`, 'success');
       }
-      
+
       return temp.innerHTML;
     }
 
-    // Преобразование Blob в base64
+    /* =============================================
+       BLOBTOBASE64(BLOB) — PROMISE-ОБЁРТКА НАД FILEREADER
+       Преобразует Blob в Data URL (base64 строка)
+       ============================================= */
     function blobToBase64(blob) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
-        reader.onload = () => resolve(reader.result);
+        reader.onload = () => resolve(reader.result); // data:image/png;base64,...
         reader.onerror = reject;
         reader.readAsDataURL(blob);
       });
     }
 
-    // Применение стилей для совместимости с Word
+    /* =============================================
+       APPLYWORDSTYLES(HTML) — ПРИМЕНЕНИЕ INLINE-СТИЛЕЙ
+       Преобразует элементы HTML так, чтобы при копировании
+       в Microsoft Word форматирование сохранялось корректно.
+
+       Word лучше понимает inline-стили и таблицы,
+       чем CSS-классы, поэтому:
+       - <pre> (блоки кода) → заменяются на <table>
+       - <code> (инлайн-код) → заменяется на <span> со стилями
+       - <del> (зачёркивание) → заменяется на <span> с line-through
+       - <blockquote> (цитаты) → заменяются на <table> с отступами
+       - <table> (таблицы) — добавляются inline-стили для границ
+       ============================================= */
     function applyWordStyles(html) {
-      // Создаём временный DOM-элемент для обработки
       const temp = document.createElement('div');
       temp.innerHTML = html;
 
-      // Стилизуем таблицы
+      /* --- Стилизация таблиц --- */
       const tables = temp.querySelectorAll('table');
       tables.forEach(table => {
         table.style.borderCollapse = 'collapse';
         table.style.width = '100%';
         table.style.marginBottom = '10pt';
-        
+
         // Ячейки заголовков
         const ths = table.querySelectorAll('th');
         ths.forEach(th => {
@@ -1090,14 +1289,14 @@ function processData(data) {
         });
       });
 
-      // Преобразуем блоки кода для Word
+      /* --- Преобразование блоков кода (<pre>) в таблицы --- */
       function convertCodeBlocksForWord(container) {
         const preBlocks = container.querySelectorAll('pre');
-        
+
         preBlocks.forEach(pre => {
           const codeElement = pre.querySelector('code');
           const codeText = codeElement ? codeElement.textContent : pre.textContent;
-          
+
           // Создаём таблицу для блока кода (Word лучше работает с таблицами)
           const table = document.createElement('table');
           table.setAttribute('style',
@@ -1111,8 +1310,8 @@ function processData(data) {
 
           const tr = document.createElement('tr');
           const td = document.createElement('td');
-          
-          // Стили для ячейки с кодом
+
+          // Стили ячейки: серый фон, моноширинный шрифт
           td.setAttribute('style',
             `background-color: #f3f4f6; ` +
             `border: 1pt solid #d1d5db; ` +
@@ -1124,7 +1323,7 @@ function processData(data) {
             `word-wrap: break-word;`
           );
 
-          // Разбиваем код на строки и создаём параграфы для каждой строки
+          // Разбиваем код на строки, каждая строка — отдельный <p>
           const lines = codeText.split('\n');
           lines.forEach((line, index) => {
             const p = document.createElement('p');
@@ -1135,17 +1334,15 @@ function processData(data) {
               `color: #1f2937; ` +
               `line-height: 1.3;`
             );
-            
-            // Заменяем пробелы на &nbsp; для сохранения отступов в Word
-            // Word игнорирует множественные обычные пробелы
+
+            // Заменяем пробелы на &nbsp; — Word игнорирует обычные пробелы
             let processedLine = line;
             if (line.length > 0) {
-              // Заменяем все пробелы на &nbsp; для сохранения отступов
               processedLine = line.replace(/ /g, '&nbsp;');
-              // Заменяем табуляции на 4 &nbsp;
+              // Табуляции → 4 &nbsp;
               processedLine = processedLine.replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;');
             }
-            
+
             p.innerHTML = processedLine;
             td.appendChild(p);
           });
@@ -1153,23 +1350,22 @@ function processData(data) {
           tr.appendChild(td);
           table.appendChild(tr);
 
-          // Заменяем pre на таблицу
+          // Заменяем <pre> на таблицу
           pre.parentNode.replaceChild(table, pre);
         });
       }
 
-      // Преобразуем инлайн-код для Word
+      /* --- Преобразование инлайн-кода (<code>) в <span> --- */
       function convertInlineCodeForWord(container) {
-        // Находим все элементы code, которые не внутри pre
         const allCode = container.querySelectorAll('code');
-        
+
         allCode.forEach(code => {
-          // Проверяем, не находится ли code внутри pre (уже обработано)
+          // Пропускаем code внутри pre (уже обработано в convertCodeBlocksForWord)
           if (code.closest('pre')) {
             return;
           }
 
-          // Создаём span с inline-стилями для Word
+          // Создаём <span> с inline-стилями: серый фон, красный текст, рамка
           const span = document.createElement('span');
           span.setAttribute('style',
             `font-family: 'Courier New', monospace; ` +
@@ -1182,39 +1378,37 @@ function processData(data) {
           );
           span.textContent = code.textContent;
 
-          // Заменяем code на span
+          // Заменяем <code> на <span>
           code.parentNode.replaceChild(span, code);
         });
       }
 
-      // Преобразуем зачеркнутый текст для Word
+      /* --- Преобразование зачёркнутого текста (<del>) в <span> --- */
       function convertStrikethroughForWord(container) {
-        // Находим все элементы del (зачеркнутый текст)
         const allDel = container.querySelectorAll('del');
-        
+
         allDel.forEach(del => {
-          // Создаём span с inline-стилями для Word
           const span = document.createElement('span');
-          span.setAttribute('style',
-            `text-decoration: line-through;`
-          );
+          span.setAttribute('style', `text-decoration: line-through;`);
           span.textContent = del.textContent;
 
-          // Заменяем del на span
+          // Заменяем <del> на <span>
           del.parentNode.replaceChild(span, del);
         });
       }
 
-      // Преобразуем цитаты для Word (вместо вложенных blockquote используем таблицы с отступами)
+      /* --- Преобразование цитат (<blockquote>) в таблицы с отступами --- */
       function convertBlockquotesForWord(container) {
-        // Собираем все blockquote и сортируем по глубине (сначала внутренние)
+        // Собираем все blockquote и сортируем по глубине вложенности (сначала внутренние)
+        // Это нужно, чтобы заменять от внутреннего к внешнему
         const allBlockquotes = Array.from(container.querySelectorAll('blockquote'));
         const sorted = allBlockquotes.sort((a, b) => {
           const depthA = countBlockquoteParents(a);
           const depthB = countBlockquoteParents(b);
-          return depthB - depthA;
+          return depthB - depthA; // Сначала самые вложенные
         });
 
+        // Подсчёт количества родительских blockquote (глубина вложенности)
         function countBlockquoteParents(el) {
           let count = 0;
           let parent = el.parentElement;
@@ -1227,9 +1421,9 @@ function processData(data) {
 
         sorted.forEach(bq => {
           const level = countBlockquoteParents(bq);
-          const indentWidth = 6 * level;
-          
-          // Создаём таблицу для имитации отступа
+          const indentWidth = 6 * level; // Отступ увеличивается с уровнем
+
+          // Создаём таблицу: невидимая ячейка-отступ + ячейка с контентом и рамкой слева
           const table = document.createElement('table');
           table.setAttribute('style',
             `border-collapse: collapse; ` +
@@ -1241,7 +1435,7 @@ function processData(data) {
           table.setAttribute('cellspacing', '0');
 
           const tr = document.createElement('tr');
-          
+
           // Невидимая ячейка-отступ
           const indentTd = document.createElement('td');
           indentTd.setAttribute('style',
@@ -1251,8 +1445,8 @@ function processData(data) {
             `margin: 0;`
           );
           indentTd.innerHTML = '&nbsp;';
-          
-          // Ячейка с контентом и рамкой
+
+          // Ячейка с контентом: синяя рамка слева, светло-фиолетовый фон
           const contentTd = document.createElement('td');
           contentTd.setAttribute('style',
             `border-left: 3pt solid #667eea; ` +
@@ -1271,7 +1465,7 @@ function processData(data) {
             contentTd.appendChild(bq.firstChild);
           }
 
-          // Стилизуем параграфы внутри
+          // Стилизуем параграфы внутри цитаты (нулевые отступы)
           const paragraphs = contentTd.querySelectorAll('p');
           paragraphs.forEach(p => {
             p.setAttribute('style',
@@ -1287,44 +1481,49 @@ function processData(data) {
           tr.appendChild(contentTd);
           table.appendChild(tr);
 
-          // Заменяем blockquote на таблицу
+          // Заменяем <blockquote> на таблицу
           bq.parentNode.replaceChild(table, bq);
         });
       }
 
-      convertBlockquotesForWord(temp);
-      
-      // Преобразуем блоки кода для Word
-      convertCodeBlocksForWord(temp);
-      
-      // Преобразуем инлайн-код для Word
-      convertInlineCodeForWord(temp);
-      
-      // Преобразуем зачеркнутый текст для Word
-      convertStrikethroughForWord(temp);
+      // === Вызываем все функции преобразования ===
+      convertBlockquotesForWord(temp);   // Цитаты → таблицы с отступами
+      convertCodeBlocksForWord(temp);    // Блоки кода → таблицы
+      convertInlineCodeForWord(temp);    // Инлайн-код → span
+      convertStrikethroughForWord(temp); // Зачёркивание → span
 
       return temp.innerHTML;
     }
 
-    // Обновление счётчиков
+    /* =============================================
+       UPDATESTATS() — ОБНОВЛЕНИЕ СЧЁТЧИКОВ
+       Обновляет счётчик символов (ввод) и слов (предпросмотр)
+       ============================================= */
     function updateStats() {
       const text = els.input.value;
       els.charCount.textContent = `${text.length} символов`;
-      
+
+      // Считаем слова: разбиваем по пробелам, отфильтроввем пустые
       const words = text.trim().split(/\s+/).filter(w => w.length > 0).length;
       els.wordCount.textContent = `${words} слов`;
     }
 
-    // Копирование в буфер обмена
+    /* =============================================
+       COPYTOCLIPBOARD() — КОПИРОВАНИЕ DOC В БУФЕР
+       Копирует HTML из предпросмотра + plain text
+       в буфер обмена через Clipboard API.
+       Word при вставке (Ctrl+V) распознаёт text/html
+       и сохраняет форматирование.
+       ============================================= */
     async function copyToClipboard() {
       try {
-        // Сначала пробуем современный Clipboard API
         const htmlContent = els.preview.innerHTML;
-        
-        // Создаём clipboardData с правильным HTML (без CF_HTML заголовков)
+
+        // Создаём Blob'ы для HTML и plain text
         const htmlBlob = new Blob([htmlContent], { type: 'text/html' });
         const textBlob = new Blob([els.input.value], { type: 'text/plain' });
-        
+
+        // ClipboardItem позволяет передать несколько форматов
         const clipboardItem = new ClipboardItem({
           'text/html': htmlBlob,
           'text/plain': textBlob
@@ -1333,7 +1532,7 @@ function processData(data) {
         await navigator.clipboard.write([clipboardItem]);
         showToast('📋 Скопировано! Вставьте в Word (Ctrl+V)', 'success');
 
-        // Визуальный эффект
+        // Визуальный эффект на кнопке
         const btn = els.copyBtn;
         const originalText = btn.innerHTML;
         btn.innerHTML = '✅ Скопировано!';
@@ -1341,22 +1540,25 @@ function processData(data) {
 
       } catch (err) {
         console.error('Clipboard API error:', err);
-        // Fallback - используем execCommand с выделением
+        // Fallback: используем execCommand для старых браузеров
         fallbackCopy(els.preview.innerHTML);
       }
     }
 
-    // Копирование HTML в буфер обмена (чистый HTML)
+    /* =============================================
+       COPYHTMLTOCLIPBOARD() — КОПИРОВАНИЕ RAW HTML
+       Копирует HTML-код из предпросмотра как текст
+       (для просмотра/редактирования исходного HTML)
+       ============================================= */
     async function copyHtmlToClipboard() {
       try {
         const htmlContent = els.preview.innerHTML;
-        
-        // Создаём ClipboardItem с HTML и plain text
+
         const clipboardItem = new ClipboardItem({
           'text/html': new Blob([htmlContent], { type: 'text/html' }),
           'text/plain': new Blob([htmlContent], { type: 'text/plain' })
         });
-        
+
         await navigator.clipboard.write([clipboardItem]);
         showToast('📄 HTML скопирован в буфер обмена', 'success');
 
@@ -1365,30 +1567,33 @@ function processData(data) {
         const originalText = btn.innerHTML;
         btn.innerHTML = '✅ Скопировано!';
         setTimeout(() => btn.innerHTML = originalText, 2000);
-        
+
       } catch (err) {
         console.error('Clipboard API error:', err);
-        // Fallback для HTML копирования
         fallbackCopyHtml(els.preview.innerHTML);
       }
     }
 
-    // Fallback для копирования HTML (старые браузеры)
+    /* =============================================
+       FALLBACKCOPYHTML(HTML) — РЕЗЕРВНЫЙ МЕТОД КОПИРОВАНИЯ
+       Для браузеров без Clipboard API.
+       Создаёт невидимый contentEditable элемент,
+       выделяет его и вызывает execCommand('copy')
+       ============================================= */
     function fallbackCopyHtml(html) {
-      // Создаём невидимый редактируемый элемент
       const temp = document.createElement('div');
       temp.contentEditable = 'true';
       temp.innerHTML = html;
       temp.style.cssText = 'position:fixed;left:-9999px;top:0;';
       document.body.appendChild(temp);
-      
+
       // Выделяем содержимое
       const range = document.createRange();
       range.selectNodeContents(temp);
       const sel = window.getSelection();
       sel.removeAllRanges();
       sel.addRange(range);
-      
+
       try {
         document.execCommand('copy');
         showToast('📄 HTML скопирован (совместимый режим)', 'success');
@@ -1400,22 +1605,24 @@ function processData(data) {
       }
     }
 
-    // Fallback для старых браузеров
+    /* =============================================
+       FALLBACKCOPY(HTML) — РЕЗЕРВНЫЙ МЕТОД КОПИРОВАНИЯ DOC
+       Аналогично fallbackCopyHtml, но для DOC-формата
+       (с contentEditable для сохранения форматирования)
+       ============================================= */
     function fallbackCopy(html) {
-      // Создаём невидимый редактируемый элемент
       const temp = document.createElement('div');
       temp.contentEditable = 'true';
       temp.innerHTML = html;
       temp.style.cssText = 'position:fixed;left:-9999px;top:0;';
       document.body.appendChild(temp);
-      
-      // Выделяем содержимое
+
       const range = document.createRange();
       range.selectNodeContents(temp);
       const sel = window.getSelection();
       sel.removeAllRanges();
       sel.addRange(range);
-      
+
       try {
         document.execCommand('copy');
         showToast('📋 Скопировано (совместимый режим)! Вставьте в Word', 'success');
@@ -1427,7 +1634,11 @@ function processData(data) {
       }
     }
 
-    // Скачивание как HTML файл
+    /* =============================================
+       DOWNLOADHTML() — СКАЧИВАНИЕ РЕЗУЛЬТАТА КАК .HTML
+       Формирует полноценный HTML-документ со встроенными
+       CSS-стилями и скачивает его через Blob + <a>
+       ============================================= */
     function downloadHtml() {
       const fullHtml = `<!DOCTYPE html>
 <html lang="ru">
@@ -1461,12 +1672,13 @@ function processData(data) {
 ${els.preview.innerHTML}
 </body>
 </html>`;
-      
+
+      // Создаём Blob и скачиваем через невидимую ссылку
       const blob = new Blob([fullHtml], { type: 'text/html' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = 'document_' + new Date().toISOString().slice(0,10) + '.html';
+      a.download = 'document_' + new Date().toISOString().slice(0, 10) + '.html';
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -1475,7 +1687,11 @@ ${els.preview.innerHTML}
       showToast('💾 Файл скачан', 'success');
     }
 
-    // Очистка
+    /* =============================================
+       CLEARALL() — ПОЛНАЯ ОЧИСТКА
+       Сбрасывает текст, предпросмотр, очередь файлов,
+       кнопки, счётчики и статус
+       ============================================= */
     function clearAll() {
       els.input.value = '';
       els.preview.innerHTML = '';
@@ -1489,10 +1705,19 @@ ${els.preview.innerHTML}
       showToast('🗑️ Очищено', 'info');
     }
 
-    // Константа: время показа toast (миллисекунды)
+    /* =============================================
+       TOAST-УВЕДОМЛЕНИЯ И СТАТУС-БАР
+       ============================================= */
+
+    // Время показа toast-уведомления (10 секунд)
     const TOAST_DURATION = 10000;
 
-    // Toast-уведомления (всплывающие и исчезающие)
+    /*
+     * SHOWTOAST(MESSAGE, TYPE) — ВСПЛЫВАЮЩЕЕ УВЕДОМЛЕНИЕ
+     * Создаёт уведомление в правом верхнем углу.
+     * Автоматически исчезает через TOAST_DURATION с анимацией.
+     * TYPE: 'success' | 'error' | 'info'
+     */
     function showToast(message, type = 'info') {
       const container = document.getElementById('toastContainer');
       const toast = document.createElement('div');
@@ -1514,30 +1739,35 @@ ${els.preview.innerHTML}
       }, TOAST_DURATION);
     }
 
-    // Показ статуса (статичный, не исчезает)
+    /*
+     * SHOWSTATUS(MESSAGE, TYPE) — СТАТУС-БАР
+     * Показывает сообщение в статус-баре под панелью файлов.
+     * Не исчезает автоматически — заменяется следующим вызовом.
+     */
     function showStatus(message, type) {
       els.status.textContent = message;
       els.status.className = `status ${type}`;
     }
 
-    // ===== Обработчики событий =====
+    /* =============================================
+       ОБРАБОТЧИКИ СОБЫТИЙ
+       Привязываем функции к кнопкам и элементам
+       ============================================= */
 
     // Инициализируем input для файлов
     initFileInput();
-    
+
     // Инициализируем Drag & Drop для панели
     initPanelDragDrop();
 
-    // Загрузка файлов (один или несколько)
+    // Кнопки загрузки файлов
     els.loadMdBtn.addEventListener('click', loadFiles);
-
-    // Добавить ещё файлы
     document.getElementById('addMoreFilesBtn').addEventListener('click', loadFiles);
 
-    // Сортировать по имени
+    // Кнопка сортировки по имени
     document.getElementById('sortByNameBtn').addEventListener('click', sortFilesByName);
 
-    // Очистить только очередь файлов
+    // Кнопка очистки только очереди файлов
     document.getElementById('clearFilesOnlyBtn').addEventListener('click', () => {
       uploadedFiles = [];
       renderFileList();
@@ -1551,29 +1781,27 @@ ${els.preview.innerHTML}
       showToast('🗑️ Очередь файлов очищена', 'info');
     });
 
-    // Переключение показа имён файлов
+    // Чекбокс «Вставить имя файла в документ» — пере-конвертирует при изменении
     document.getElementById('showFileNameCheckbox').addEventListener('change', () => {
       if (uploadedFiles.length > 0) {
         convertAllFiles();
       }
     });
 
-    // Конвертация по кнопке
+    // Кнопка конвертации
     els.convertBtn.addEventListener('click', () => convertMarkdown());
 
-    // Копирование
+    // Кнопки копирования
     els.copyBtn.addEventListener('click', copyToClipboard);
-    
-    // Копирование HTML
     els.copyHtmlBtn.addEventListener('click', copyHtmlToClipboard);
-    
-    // Скачивание
+
+    // Кнопка скачивания
     els.downloadBtn.addEventListener('click', downloadHtml);
-    
-    // Очистка
+
+    // Кнопка полной очистки
     els.clearBtn.addEventListener('click', clearAll);
-    
-    // Автоконвертация при вводе (с дебаунсом)
+
+    // Автоконвертация при вводе текста (с задержкой 300мс — дебаунс)
     let debounceTimer;
     els.input.addEventListener('input', () => {
       updateStats();
@@ -1583,7 +1811,7 @@ ${els.preview.innerHTML}
       }, 300);
     });
 
-    // Переключение стилей
+    // Переключатель «Стили для Word» — пере-конвертирует при изменении
     els.styleToggle.addEventListener('change', () => {
       convertMarkdown();
       if (els.styleToggle.checked) {
@@ -1594,19 +1822,15 @@ ${els.preview.innerHTML}
         showStatus('🔓 Чистый вывод Showdown', 'info');
       }
     });
-    
-    // ===== Инициализация при загрузке =====
+
+    /* =============================================
+       ИНИЦИАЛИЗАЦИЯ ПРИ ЗАГРУЗКЕ СТРАНИЦЫ
+       Выполняется после готовности DOM
+       ============================================= */
     window.addEventListener('DOMContentLoaded', () => {
-      // Показываем пустой список файлов
-      renderFileList();
-
-      // Загружаем пример
-      els.input.value = defaultExample;
-
-      // Конвертируем сразу
-      convertMarkdown();
-
-      // Показываем приветственное сообщение
+      renderFileList();              // Показываем пустой список файлов
+      els.input.value = defaultExample; // Загружаем пример Markdown
+      convertMarkdown();             // Сразу конвертируем
       showStatus('🎉 Готово к работе! Нажмите "Копировать DOC" для вставки в Word', 'info');
     });
   </script>

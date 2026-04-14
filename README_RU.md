@@ -73,29 +73,6 @@
 - Формат CF_HTML обеспечивает корректную вставку в Word
 - Все данные обрабатываются локально, работает полностью без интернета
 
-### Пакетная обработка (Node.js)
-
-Для автоматизации без браузера используйте консольные утилиты:
-
-**`simple-batch-convert.js`** — без зависимостей:
-```bash
-node simple-batch-convert.js ./docs output.html
-node simple-batch-convert.js ./docs output.html --separator=line
-```
-
-**`batch-convert.js`** — с использованием Showdown (требуется `npm install showdown`):
-```bash
-npm install
-node batch-convert.js ./docs output.html --toc --sort=name
-```
-
-Опции для `batch-convert.js`:
-- `--sort=name` — сортировка по имени
-- `--separator=page-break|line|none` — тип разделителя между файлами
-- `--toc` — добавить оглавление
-- `--title="Заголовок"` — заголовок документа
-- `--verbose` — подробный вывод
-
 ## Запуск
 
 ### Простой способ (открытие файла)
@@ -127,9 +104,6 @@ npx http-server
 - `lib/showdown.min.js` — библиотека для конвертации Markdown
 - `lib/icon256.png` — пример изображения для демонстрации встраивания
 - `BigExample.md` — пример сложного Markdown-документа
-- `batch-convert.js` — пакетная конвертация (требует showdown)
-- `simple-batch-convert.js` — пакетная конвертация (без зависимостей)
-- `package.json` — зависимости для Node.js скриптов
 - `prompt.txt` — исходное ТЗ
 
 ## Поддерживаемые элементы Markdown
