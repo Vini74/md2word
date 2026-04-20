@@ -292,6 +292,9 @@
                 if (!showHidden && entry.name.startsWith('.')) {
                     continue;
                 }
+                if (!showFiles && entry.kind === 'file') {
+                    continue;
+                }
                 entries.push(entry);
             }
             
