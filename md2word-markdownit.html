@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Markdown → Word Converter</title>
+  <title>Markdown → Word Converter (markdown-it)</title>
   <script src="lib/markdown-it.min.js"></script>
   <script src="lib/markdown-it-task-lists.min.js"></script>
   <script src="lib/markdown-it-mark.min.js"></script>
@@ -754,7 +754,7 @@
 </head>
 <body>
   <div class="wrapper">
-    <h1>📝 Markdown → Word Converter</h1>
+    <h1>📝 Markdown → Word Converter (markdown-it)</h1>
 
     <!-- Контейнер для toast-уведомлений -->
     <div id="toastContainer" class="toast-container"></div>
@@ -802,6 +802,13 @@
                 <span>Простой перенос строк</span>
               </label>
               <div class="option-desc">Перенос строки по одному \n (опция breaks)</div>
+            </div>
+            <div class="settings-option">
+              <label>
+                <input type="checkbox" id="optHtmlTags" checked>
+                <span>Разрешить HTML-теги</span>
+              </label>
+              <div class="option-desc">Позволяет использовать HTML-теги, такие как &lt;br&gt;, &lt;b&gt; и др. (опция html)</div>
             </div>
           </div>
           
@@ -868,6 +875,34 @@
                 <span>Контейнеры (::: warning)</span>
               </label>
               <div class="option-desc">Блоки с кастомными классами</div>
+            </div>
+            <div class="settings-option">
+              <label>
+                <input type="checkbox" id="optTypographer">
+                <span>Типографские замены</span>
+              </label>
+              <div class="option-desc">Заменяет кавычки, тире, многоточия на типографские символы (опция typographer)</div>
+            </div>
+            <div class="settings-option">
+              <label>
+                <input type="checkbox" id="optXhtmlOut">
+                <span>XHTML-стиль тегов</span>
+              </label>
+              <div class="option-desc">Выводить теги в XHTML-стиле (например, <br />) (опция xhtmlOut)</div>
+            </div>
+            <div class="settings-option">
+              <label>
+                <span>Префикс языка для кода</span>
+                <input type="text" id="optLangPrefix" value="language-" style="width: 120px; padding: 4px; border: 1px solid #ccc; border-radius: 4px;">
+              </label>
+              <div class="option-desc">Префикс классов для блоков кода (опция langPrefix)</div>
+            </div>
+            <div class="settings-option">
+              <label>
+                <span>Кавычки для типографа</span>
+                <input type="text" id="optQuotes" value="“”‘’" style="width: 120px; padding: 4px; border: 1px solid #ccc; border-radius: 4px;">
+              </label>
+              <div class="option-desc">Четыре символа кавычек: открывающая/закрывающая двойные и одинарные (опция quotes)</div>
             </div>
           </div>
         </div>
@@ -957,7 +992,7 @@
        Создаём парсер Markdown → HTML с нужными опциями
        ============================================= */
     let md = window.markdownit({
-      html: false,                               // Не разрешать HTML-теги
+      html: true,                                // Разрешать HTML-теги (например, <br>)
       xhtmlOut: false,                           // Не использовать XHTML
       breaks: true,                              // Перенос строки по одному \n (аналог simpleLineBreaks)
       linkify: true,                             // Автоопределение ссылок (аналог simplifiedAutoLink)
@@ -980,7 +1015,7 @@
        УПРАВЛЕНИЕ НАСТРОЙКАМИ MARKDOWN-IT
        ============================================= */
     
-    // Объект с настройками по умолчанию (адаптировано для markdown-it)
+    // Объект с настройки по умолчанию (адаптировано для markdown-it)
     const defaultSettings = {
       tasklists: true,
       strikethrough: true,
@@ -992,7 +1027,12 @@
       superscript: true,
       deflist: true,
       underline: true,
-      container: true
+      container: true,
+      htmlTags: true,
+      typographer: false,
+      xhtmlOut: false,
+      langPrefix: 'language-',
+      quotes: '“”‘’'
     };
 
     // Текущие настройки (загружаются из localStorage или defaultSettings)
@@ -1002,12 +1042,13 @@
     function updateConverter() {
       // Создаём новый экземпляр markdown-it с текущими настройками
       md = window.markdownit({
-        html: false,
-        xhtmlOut: false,
+        html: currentSettings.htmlTags,
+        xhtmlOut: currentSettings.xhtmlOut,
         breaks: currentSettings.simpleLineBreaks,
         linkify: currentSettings.simplifiedAutoLink,
-        typographer: false,
-        quotes: '“”‘’'
+        typographer: currentSettings.typographer,
+        langPrefix: currentSettings.langPrefix,
+        quotes: currentSettings.quotes
       });
       
       // Подключаем плагины в зависимости от настроек
@@ -1112,6 +1153,11 @@ ${html}
       currentSettings.deflist = document.getElementById('optDeflist').checked;
       currentSettings.underline = document.getElementById('optUnderline').checked;
       currentSettings.container = document.getElementById('optContainer').checked;
+      currentSettings.htmlTags = document.getElementById('optHtmlTags').checked;
+      currentSettings.typographer = document.getElementById('optTypographer').checked;
+      currentSettings.xhtmlOut = document.getElementById('optXhtmlOut').checked;
+      currentSettings.langPrefix = document.getElementById('optLangPrefix').value;
+      currentSettings.quotes = document.getElementById('optQuotes').value;
     }
 
     // Функция для обновления UI из currentSettings
@@ -1128,6 +1174,11 @@ ${html}
       document.getElementById('optDeflist').checked = currentSettings.deflist;
       document.getElementById('optUnderline').checked = currentSettings.underline;
       document.getElementById('optContainer').checked = currentSettings.container;
+      document.getElementById('optHtmlTags').checked = currentSettings.htmlTags;
+      document.getElementById('optTypographer').checked = currentSettings.typographer;
+      document.getElementById('optXhtmlOut').checked = currentSettings.xhtmlOut;
+      document.getElementById('optLangPrefix').value = currentSettings.langPrefix;
+      document.getElementById('optQuotes').value = currentSettings.quotes;
     }
 
     // Функция для сброса настроек к умолчаниям
