@@ -6,6 +6,29 @@ A browser-based tool that converts Markdown to Word-compatible HTML and copies i
 
 A single-page application (SPA) that runs entirely in your browser. Converts Markdown text to HTML that can be copied to clipboard and pasted into Word with formatting preserved.
 
+## Available Versions
+
+The application is available in two versions with different Markdown parsing libraries:
+
+### Version 1: markdown-it based (`md2word-markdownit.html`)
+- **Library**: markdown-it with extensions
+- **Features**: Supports advanced Markdown features including:
+  - Task lists (checkboxes)
+  - Marked text (`==highlight==`)
+  - Subscript and superscript
+  - Definition lists
+  - Inserted text (`++inserted++`)
+  - Custom containers
+  - MultiMarkdown tables
+- **File**: `md2word-markdownit.html`
+
+### Version 2: showdown based (`md2word-showdown.html`)
+- **Library**: showdown.js
+- **Features**: Simpler, more lightweight implementation
+- **File**: `md2word-showdown.html`
+
+**Recommendation**: Use the markdown-it version for better compatibility with advanced Markdown features.
+
 ## Key Features
 
 ### Single File Mode
@@ -38,7 +61,7 @@ A single-page application (SPA) that runs entirely in your browser. Converts Mar
 ## How to Use
 
 ### Single File
-1. Open `index.html` in a browser or start a local server (recommended)
+1. Open `md2word-markdownit.html` or `md2word-showdown.html` in a browser or start a local server (recommended)
 2. Enter Markdown in the text area or load a file via "📂 Load Markdown"
 3. Make sure "📊 Styles for Word" option is enabled (for image embedding)
 4. Click "Convert" (or wait for auto-conversion)
@@ -46,7 +69,7 @@ A single-page application (SPA) that runs entirely in your browser. Converts Mar
 6. Paste (Ctrl+V) into Microsoft Word
 
 ### Multiple Files
-1. Open `index.html` in a browser
+1. Open `md2word-markdownit.html` or `md2word-showdown.html` in a browser
 2. **Drop files** from your file explorer onto the "📑 File Queue" panel **OR** click "📂 Load Markdown" and select multiple files
 3. Files are automatically merged and converted
 4. **Reorder files** using ↑ ↓ buttons (auto-conversion triggers automatically)
@@ -66,7 +89,9 @@ A single-page application (SPA) that runs entirely in your browser. Converts Mar
 ## Technical Details
 
 - Pure HTML/CSS/JavaScript, no server-side code
-- Uses Showdown.js library (included locally in `/lib`)
+- **Two parsing engine options**:
+  - **markdown-it version**: Uses markdown-it library with extensions for advanced Markdown features
+  - **showdown version**: Uses showdown.js library (simpler implementation)
 - Clipboard API for clipboard operations
 - **Images are converted to base64** for embedding in documents (works offline in Word)
 - **Code formatting preserves indentation** by replacing spaces with `&nbsp;`
@@ -75,7 +100,7 @@ A single-page application (SPA) that runs entirely in your browser. Converts Mar
 ## Running
 
 ### Simple method (open file)
-Just open `index.html` in a browser.
+Just open `md2word-markdownit.html` or `md2word-showdown.html` in a browser.
 
 ⚠️ **Important**: When opening the file directly (`file://`), images may not load due to CORS restrictions.
 
@@ -95,16 +120,21 @@ Or use npx:
 npx http-server
 ```
 
-Then open: `http://localhost:8000`
+Then open: `http://localhost:8000/md2word-markdownit.html` or `http://localhost:8000/md2word-showdown.html`
 
 ## Project Files
 
-- `index.html` – main application
-- `lib/showdown.min.js` – Markdown conversion library
+- `md2word-markdownit.html` – main application with markdown-it library
+- `md2word-showdown.html` – alternative application with showdown library
+- `lib/` – directory containing JavaScript libraries
+  - `markdown-it.min.js` and extensions – for markdown-it version
+  - `showdown.min.js` – for showdown version
 - `lib/icon256.png` – example image for embedding demonstration
 - `BigExample.md` – example of a complex Markdown document
 - `prompt.txt` – original requirements
 - `README_RU.md` – documentation in Russian
+- `test1.md`, `test2.md`, `test3.md` – test files
+- `tree.html` – file tree visualization
 
 ## Supported Markdown Elements
 
@@ -116,18 +146,22 @@ Then open: `http://localhost:8000`
 - ✅ Images (embedded in document as base64)
 - ✅ Bulleted and numbered lists
 - ✅ Nested lists (4+ levels)
-- ✅ Checkboxes (task lists)
+- ✅ Checkboxes (task lists) - **markdown-it version only**
 - ✅ Tables
 - ✅ Quotes with nesting
 - ✅ Horizontal rules
 - ✅ Line breaks (two spaces at end of line)
 - ✅ Special character escaping
+- ✅ Marked text (`==highlight==`) - **markdown-it version only**
+- ✅ Subscript and superscript - **markdown-it version only**
+- ✅ Definition lists - **markdown-it version only**
 
 ## Limitations
 
 - Some advanced Markdown table features may not be supported
 - Requires a modern browser with Clipboard API and Drag & Drop support
 - A local server is recommended for proper image loading
+- showdown version has more limited Markdown feature support
 
 ## License
 
