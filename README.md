@@ -58,6 +58,11 @@ The application is available in two versions with different Markdown parsing lib
 - **Toast notifications** — floating action messages (10 sec)
 - **Status bar** — persistent current state display
 
+### Dual Language Support (i18n)
+- **Russian and English** — switch via the dropdown in the top-right corner
+- **Auto-save** — selected language is saved to `localStorage` and restored on page reload
+- **Full localization** — all UI elements, toast notifications, status bar, and settings switch between languages
+
 ## How to Use
 
 ### Single File

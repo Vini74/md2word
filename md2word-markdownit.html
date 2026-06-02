@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" id="htmlTag">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Markdown → Word Converter (markdown-it)</title>
+  <title data-i18n="title">Markdown → Word Converter (markdown-it)</title>
   <script src="lib/markdown-it.min.js"></script>
   <script src="lib/markdown-it-task-lists.min.js"></script>
   <script src="lib/markdown-it-mark.min.js"></script>
@@ -754,26 +754,33 @@
 </head>
 <body>
   <div class="wrapper">
-    <h1>📝 Markdown → Word Converter (markdown-it)</h1>
+    <!-- Переключатель языка -->
+    <div style="text-align: right; margin-bottom: 10px;">
+      <select id="langSelect" style="padding: 6px 12px; border-radius: 6px; border: 1px solid #ccc; font-size: 14px; cursor: pointer;">
+        <option value="ru">🇷🇺 Русский</option>
+        <option value="en">🇬🇧 English</option>
+      </select>
+    </div>
+    <h1 data-i18n="title">📝 Markdown → Word Converter (markdown-it)</h1>
 
     <!-- Контейнер для toast-уведомлений -->
     <div id="toastContainer" class="toast-container"></div>
     
     <div class="controls">
-      <button id="loadMdBtn" class="secondary">📂 Загрузить Markdown</button>
-      <button id="convertBtn" class="success">🔄 Конвертировать</button>
-      <button id="copyBtn" disabled>📋 Копировать DOC в буфер</button>
-      <button id="copyHtmlBtn" class="secondary" disabled>📄 Копировать HTML в буфер</button>
-      <button id="downloadBtn" class="secondary" disabled>💾 Скачать как HTML</button>
-      <button id="clearBtn" class="secondary">🗑️ Очистить</button>
+      <button id="loadMdBtn" class="secondary" data-i18n="loadMdBtn">📂 Загрузить Markdown</button>
+      <button id="convertBtn" class="success" data-i18n="convertBtn">🔄 Конвертировать</button>
+      <button id="copyBtn" disabled data-i18n="copyBtn">📋 Копировать DOC в буфер</button>
+      <button id="copyHtmlBtn" class="secondary" disabled data-i18n="copyHtmlBtn">📄 Копировать HTML в буфер</button>
+      <button id="downloadBtn" class="secondary" disabled data-i18n="downloadBtn">💾 Скачать как HTML</button>
+      <button id="clearBtn" class="secondary" data-i18n="clearBtn">🗑️ Очистить</button>
     </div>
 
-    <!-- Раскрываемая панель настроек Showdown -->
+    <!-- Раскрываемая панель настроек -->
     <div class="settings-panel collapsed">
       <div class="settings-header">
-        <h3>⚙️ Настройки конвертации Markdown-it</h3>
+        <h3 data-i18n="settingsTitle">⚙️ Настройки конвертации Markdown-it</h3>
         <button id="toggleSettingsBtn" class="secondary" style="padding: 6px 12px; font-size: 12px;">
-          <span id="toggleSettingsIcon">▶</span> Развернуть
+          <span id="toggleSettingsIcon">▶</span> <span data-i18n="expandBtn">Развернуть</span>
         </button>
       </div>
       
@@ -781,32 +788,32 @@
         <div class="settings-grid">
           <!-- Группа 1: Основные возможности -->
           <div class="settings-group">
-            <h4>📋 Основные возможности</h4>
+            <h4 data-i18n="settingsGroup1Title">📋 Основные возможности</h4>
             <div class="settings-option">
               <label>
                 <input type="checkbox" id="optTasklists" checked>
-                <span>Чекбоксы (task lists)</span>
+                <span data-i18n="optTasklists">Чекбоксы (task lists)</span>
               </label>
-              <div class="option-desc">Поддержка чекбоксов (- [x]) через плагин markdown-it-task-lists</div>
+              <div class="option-desc" data-i18n="optTasklistsDesc">Поддержка чекбоксов (- [x]) через плагин markdown-it-task-lists</div>
             </div>
             <div class="settings-option">
               <label>
                 <input type="checkbox" id="optStrikethrough" checked>
-                <span>Зачёркнутый текст</span>
+                <span data-i18n="optStrikethrough">Зачёркнутый текст</span>
               </label>
-              <div class="option-desc">Поддержка ~~зачёркивания~~ через плагин markdown-it-mark</div>
+              <div class="option-desc" data-i18n="optStrikethroughDesc">Поддержка ~~зачёркивания~~ через плагин markdown-it-mark</div>
             </div>
             <div class="settings-option">
               <label>
                 <input type="checkbox" id="optSimpleLineBreaks" checked>
-                <span>Простой перенос строк</span>
+                <span data-i18n="optSimpleLineBreaks">Простой перенос строк</span>
               </label>
-              <div class="option-desc">Перенос строки по одному \n (опция breaks)</div>
+              <div class="option-desc" data-i18n="optSimpleLineBreaksDesc">Перенос строки по одному \n (опция breaks)</div>
             </div>
             <div class="settings-option">
               <label>
                 <input type="checkbox" id="optHtmlTags" checked>
-                <span>Разрешить HTML-теги</span>
+                <span data-i18n="optHtmlTags">Разрешить HTML-теги</span>
               </label>
               <div class="option-desc">Позволяет использовать HTML-теги, такие как &lt;br&gt;, &lt;b&gt; и др. (опция html)</div>
             </div>
@@ -814,104 +821,104 @@
           
           <!-- Группа 2: Обработка ссылок -->
           <div class="settings-group">
-            <h4>🔗 Ссылки</h4>
+            <h4 data-i18n="settingsGroup2Title">🔗 Ссылки</h4>
             <div class="settings-option">
               <label>
                 <input type="checkbox" id="optSimplifiedAutoLink" checked>
-                <span>Автоопределение ссылок</span>
+                <span data-i18n="optSimplifiedAutoLink">Автоопределение ссылок</span>
               </label>
-              <div class="option-desc">Автоматическое преобразование URL в ссылки (опция linkify)</div>
+              <div class="option-desc" data-i18n="optSimplifiedAutoLinkDesc">Автоматическое преобразование URL в ссылки (опция linkify)</div>
             </div>
             <div class="settings-option">
               <label>
                 <input type="checkbox" id="optOpenLinksInNewWindow">
-                <span>Открывать ссылки в новом окне</span>
+                <span data-i18n="optOpenLinksInNewWindow">Открывать ссылки в новом окне</span>
               </label>
-              <div class="option-desc">Добавлять target="_blank" к ссылкам (постобработка)</div>
+              <div class="option-desc" data-i18n="optOpenLinksInNewWindowDesc">Добавлять target="_blank" к ссылкам (постобработка)</div>
             </div>
           </div>
           
           <!-- Группа 3: Дополнительные возможности -->
           <div class="settings-group">
-            <h4>✨ Дополнительные возможности</h4>
+            <h4 data-i18n="settingsGroup3Title">✨ Дополнительные возможности</h4>
             <div class="settings-option">
               <label>
                 <input type="checkbox" id="optCompleteHTMLDocument">
-                <span>Полный HTML-документ</span>
+                <span data-i18n="optCompleteHTMLDocument">Полный HTML-документ</span>
               </label>
-              <div class="option-desc">Оборачивать вывод в <html><body>...</div>
+              <div class="option-desc" data-i18n="optCompleteHTMLDocumentDesc">Оборачивать вывод в <html><body>...</div>
             </div>
             <div class="settings-option">
               <label>
                 <input type="checkbox" id="optSubscript" checked>
-                <span>Нижний индекс (H~2~O)</span>
+                <span data-i18n="optSubscript">Нижний индекс (H~2~O)</span>
               </label>
-              <div class="option-desc">Поддержка синтаксиса ~ для нижнего индекса</div>
+              <div class="option-desc" data-i18n="optSubscriptDesc">Поддержка синтаксиса ~ для нижнего индекса</div>
             </div>
             <div class="settings-option">
               <label>
                 <input type="checkbox" id="optSuperscript" checked>
-                <span>Верхний индекс (X^2^)</span>
+                <span data-i18n="optSuperscript">Верхний индекс (X^2^)</span>
               </label>
-              <div class="option-desc">Поддержка синтаксиса ^ для верхнего индекса</div>
+              <div class="option-desc" data-i18n="optSuperscriptDesc">Поддержка синтаксиса ^ для верхнего индекса</div>
             </div>
             <div class="settings-option">
               <label>
                 <input type="checkbox" id="optDeflist" checked>
-                <span>Описательные списки</span>
+                <span data-i18n="optDeflist">Описательные списки</span>
               </label>
-              <div class="option-desc">Списки определений (термин : описание)</div>
+              <div class="option-desc" data-i18n="optDeflistDesc">Списки определений (термин : описание)</div>
             </div>
             <div class="settings-option">
               <label>
                 <input type="checkbox" id="optUnderline" checked>
-                <span>Подчёркивание (++текст++)</span>
+                <span data-i18n="optUnderline">Подчёркивание (++текст++)</span>
               </label>
-              <div class="option-desc">Подчёркнутый текст через ++</div>
+              <div class="option-desc" data-i18n="optUnderlineDesc">Подчёркнутый текст через ++</div>
             </div>
             <div class="settings-option">
               <label>
                 <input type="checkbox" id="optContainer" checked>
-                <span>Контейнеры (::: warning)</span>
+                <span data-i18n="optContainer">Контейнеры (::: warning)</span>
               </label>
-              <div class="option-desc">Блоки с кастомными классами</div>
+              <div class="option-desc" data-i18n="optContainerDesc">Блоки с кастомными классами</div>
             </div>
             <div class="settings-option">
               <label>
                 <input type="checkbox" id="optTypographer">
-                <span>Типографские замены</span>
+                <span data-i18n="optTypographer">Типографские замены</span>
               </label>
-              <div class="option-desc">Заменяет кавычки, тире, многоточия на типографские символы (опция typographer)</div>
+              <div class="option-desc" data-i18n="optTypographerDesc">Заменяет кавычки, тире, многоточия на типографские символы (опция typographer)</div>
             </div>
             <div class="settings-option">
               <label>
                 <input type="checkbox" id="optXhtmlOut">
-                <span>XHTML-стиль тегов</span>
+                <span data-i18n="optXhtmlOut">XHTML-стиль тегов</span>
               </label>
-              <div class="option-desc">Выводить теги в XHTML-стиле (например, <br />) (опция xhtmlOut)</div>
+              <div class="option-desc" data-i18n="optXhtmlOutDesc">Выводить теги в XHTML-стиле (например, <br />) (опция xhtmlOut)</div>
             </div>
             <div class="settings-option">
               <label>
-                <span>Префикс языка для кода</span>
+                <span data-i18n="optLangPrefix">Префикс языка для кода</span>
                 <input type="text" id="optLangPrefix" value="language-" style="width: 120px; padding: 4px; border: 1px solid #ccc; border-radius: 4px;">
               </label>
-              <div class="option-desc">Префикс классов для блоков кода (опция langPrefix)</div>
+              <div class="option-desc" data-i18n="optLangPrefixDesc">Префикс классов для блоков кода (опция langPrefix)</div>
             </div>
             <div class="settings-option">
               <label>
-                <span>Кавычки для типографа</span>
+                <span data-i18n="optQuotes">Кавычки для типографа</span>
                 <input type="text" id="optQuotes" value="“”‘’" style="width: 120px; padding: 4px; border: 1px solid #ccc; border-radius: 4px;">
               </label>
-              <div class="option-desc">Четыре символа кавычек: открывающая/закрывающая двойные и одинарные (опция quotes)</div>
+              <div class="option-desc" data-i18n="optQuotesDesc">Четыре символа кавычек: открывающая/закрывающая двойные и одинарные (опция quotes)</div>
             </div>
           </div>
         </div>
         
         <div class="settings-controls">
-          <button id="applySettingsBtn" class="success">✅ Применить настройки</button>
-          <button id="resetSettingsBtn" class="secondary">🔄 Сбросить к умолчаниям</button>
-          <button id="saveSettingsBtn" class="secondary">💾 Сохранить настройки</button>
-          <div class="settings-hint">
+          <button id="applySettingsBtn" class="success" data-i18n="applySettingsBtn">✅ Применить настройки</button>
+          <button id="resetSettingsBtn" class="secondary" data-i18n="resetSettingsBtn">🔄 Сбросить к умолчаниям</button>
+          <button id="saveSettingsBtn" class="secondary" data-i18n="saveSettingsBtn">💾 Сохранить настройки</button>
+          <div class="settings-hint" data-i18n="settingsHint">
             💡 Настройки применяются автоматически при изменении. Сохранённые настройки будут загружены при следующем посещении.
           </div>
         </div>
@@ -924,27 +931,27 @@
     <!-- Панель очереди файлов (сворачиваемая) -->
     <div id="multiFilePanel" class="multi-file-panel collapsed">
       <div class="multi-file-header">
-        <h3>📑 Очередь файлов</h3>
+        <h3 data-i18n="fileQueueTitle">📑 Очередь файлов</h3>
         <div style="display: flex; gap: 8px;">
           <button id="toggleFilesPanelBtn" class="secondary" style="padding: 6px 12px; font-size: 12px;">
-            <span id="toggleFilesPanelIcon">▶</span> Развернуть
+            <span id="toggleFilesPanelIcon">▶</span> <span data-i18n="expandBtn">Развернуть</span>
           </button>
-          <button id="clearFilesOnlyBtn" class="secondary" style="padding: 6px 12px; font-size: 12px;">🗑️ Очистить очередь</button>
+          <button id="clearFilesOnlyBtn" class="secondary" style="padding: 6px 12px; font-size: 12px;" data-i18n="clearQueueBtn">🗑️ Очистить очередь</button>
         </div>
       </div>
       <div id="multiFileContent" class="multi-file-content">
         <div style="font-size: 13px; color: #666; margin-bottom: 12px; padding: 8px; background: #fff; border-radius: 4px; border-left: 3px solid #667eea;">
-          💡 <strong>Порядок:</strong> Используйте кнопки ↑ ↓ для изменения порядка. Файлы будут объединены в один документ в этом порядке.
-          <br>🖱️ <strong>Загрузка:</strong> Перетащите файлы из проводника прямо на эту область или нажмите кнопку загрузки.
+          <span data-i18n="fileQueueHint1"><strong>Порядок:</strong> Используйте кнопки ↑ ↓ для изменения порядка. Файлы будут объединены в один документ в этом порядке.</span>
+          <br><span data-i18n="fileQueueHint2"><strong>Загрузка:</strong> Перетащите файлы из проводника прямо на эту область или нажмите кнопку загрузки.</span>
         </div>
         <div id="fileList" class="file-list"></div>
         <div class="file-list-controls">
           <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-            <button id="addMoreFilesBtn" class="secondary" style="padding: 8px 16px; font-size: 13px;">➕ Добавить ещё файлы</button>
-            <button id="sortByNameBtn" class="secondary" style="padding: 8px 16px; font-size: 13px;">🔤 Сортировать по имени</button>
+            <button id="addMoreFilesBtn" class="secondary" style="padding: 8px 16px; font-size: 13px;" data-i18n="addMoreFilesBtn">➕ Добавить ещё файлы</button>
+            <button id="sortByNameBtn" class="secondary" style="padding: 8px 16px; font-size: 13px;" data-i18n="sortByNameBtn">🔤 Сортировать по имени</button>
             <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 14px; color: #333; margin-left: auto;">
               <input type="checkbox" id="showFileNameCheckbox" style="cursor: pointer; width: 18px; height: 18px;">
-              <span>📄 Вставить имя файла в документ</span>
+              <span data-i18n="showFileNameLabel">📄 Вставить имя файла в документ</span>
             </label>
           </div>
         </div>
@@ -956,37 +963,375 @@
     <div class="container">
       <div class="panel">
         <div class="panel-header">
-          <h3>📥 Markdown (ввод)</h3>
-          <span class="char-count" id="charCount">0 символов</span>
+          <h3 data-i18n="inputPanelTitle">📥 Markdown (ввод)</h3>
+          <span class="char-count" id="charCount" data-i18n-char="0 символов">0 символов</span>
         </div>
-        <textarea id="markdownInput" placeholder="Введите ваш Markdown здесь..."></textarea>
+        <textarea id="markdownInput" data-i18n-placeholder="inputPlaceholder" placeholder="Введите ваш Markdown здесь..."></textarea>
       </div>
       <div class="panel">
         <div class="panel-header">
-          <h3>👁️ Предпросмотр (как будет в Word)</h3>
+          <h3 data-i18n="previewPanelTitle">👁️ Предпросмотр (как будет в Word)</h3>
           <div style="display: flex; align-items: center; gap: 12px;">
             <label style="display: flex; align-items: center; gap: 4px; font-size: 13px; cursor: pointer;">
               <input type="checkbox" id="styleToggle" style="cursor: pointer;">
-              <span>📊 Стили для Word</span>
+              <span data-i18n="wordStylesLabel">📊 Стили для Word</span>
             </label>
-            <span class="char-count" id="wordCount">0 слов</span>
+            <span class="char-count" id="wordCount" data-i18n-word="0 слов">0 слов</span>
           </div>
         </div>
         <div id="preview"></div>
       </div>
     </div>
     
-    <div class="hint">
-      💡 <strong>Инструкция:</strong> После конвертации нажмите «Копировать DOC в буфер обмена», 
+    <div class="hint" data-i18n="hint">
+      💡 <strong>Инструкция:</strong> После конвертации нажмите «Копировать DOC в буфер обмена»,
       затем вставьте в Microsoft Word (Ctrl+V). Форматирование, списки и таблицы сохранятся.
     </div>
     
-    <div class="footer">
+    <div class="footer" data-i18n="footer">
       Работает полностью локально в вашем браузере • Данные не отправляются на сервер
     </div>
   </div>
 
   <script>
+    /* =============================================
+       ИНТЕРНАЦИОНАЛИЗАЦИЯ (i18n)
+       Поддержка русского и английского языков
+       ============================================= */
+    const i18n = {
+      currentLang: 'ru',
+      
+      translations: {
+        ru: {
+          title: '📝 Markdown → Word Converter (markdown-it)',
+          loadMdBtn: '📂 Загрузить Markdown',
+          convertBtn: '🔄 Конвертировать',
+          copyBtn: '📋 Копировать DOC в буфер',
+          copyHtmlBtn: '📄 Копировать HTML в буфер',
+          downloadBtn: '💾 Скачать как HTML',
+          clearBtn: '🗑️ Очистить',
+          settingsTitle: '⚙️ Настройки конвертации Markdown-it',
+          expandBtn: 'Развернуть',
+          collapseBtn: 'Свернуть',
+          settingsGroup1Title: '📋 Основные возможности',
+          optTasklists: 'Чекбоксы (task lists)',
+          optTasklistsDesc: 'Поддержка чекбоксов (- [x]) через плагин markdown-it-task-lists',
+          optStrikethrough: 'Зачёркнутый текст',
+          optStrikethroughDesc: 'Поддержка ~~зачёркивания~~ через плагин markdown-it-mark',
+          optSimpleLineBreaks: 'Простой перенос строк',
+          optSimpleLineBreaksDesc: 'Перенос строки по одному \\n (опция breaks)',
+          optHtmlTags: 'Разрешить HTML-теги',
+          optHtmlTagsDesc: 'Позволяет использовать HTML-теги, такие как <br>, <b> и др. (опция html)',
+          settingsGroup2Title: '🔗 Ссылки',
+          optSimplifiedAutoLink: 'Автоопределение ссылок',
+          optSimplifiedAutoLinkDesc: 'Автоматическое преобразование URL в ссылки (опция linkify)',
+          optOpenLinksInNewWindow: 'Открывать ссылки в новом окне',
+          optOpenLinksInNewWindowDesc: 'Добавлять target="_blank" к ссылкам (постобработка)',
+          settingsGroup3Title: '✨ Дополнительные возможности',
+          optCompleteHTMLDocument: 'Полный HTML-документ',
+          optCompleteHTMLDocumentDesc: 'Оборачивать вывод в <html><body>...',
+          optSubscript: 'Нижний индекс (H~2~O)',
+          optSubscriptDesc: 'Поддержка синтаксиса ~ для нижнего индекса',
+          optSuperscript: 'Верхний индекс (X^2^)',
+          optSuperscriptDesc: 'Поддержка синтаксиса ^ для верхнего индекса',
+          optDeflist: 'Описательные списки',
+          optDeflistDesc: 'Списки определений (термин : описание)',
+          optUnderline: 'Подчёркивание (++текст++)',
+          optUnderlineDesc: 'Подчёркнутый текст через ++',
+          optContainer: 'Контейнеры (::: warning)',
+          optContainerDesc: 'Блоки с кастомными классами',
+          optTypographer: 'Типографские замены',
+          optTypographerDesc: 'Заменяет кавычки, тире, многоточия на типографские символы (опция typographer)',
+          optXhtmlOut: 'XHTML-стиль тегов',
+          optXhtmlOutDesc: 'Выводить теги в XHTML-стиле (например, <br />) (опция xhtmlOut)',
+          optLangPrefix: 'Префикс языка для кода',
+          optLangPrefixDesc: 'Префикс классов для блоков кода (опция langPrefix)',
+          optQuotes: 'Кавычки для типографа',
+          optQuotesDesc: 'Четыре символа кавычек: открывающая/закрывающая двойные и одинарные (опция quotes)',
+          applySettingsBtn: '✅ Применить настройки',
+          resetSettingsBtn: '🔄 Сбросить к умолчаниям',
+          saveSettingsBtn: '💾 Сохранить настройки',
+          settingsHint: '💡 Настройки применяются автоматически при изменении. Сохранённые настройки будут загружены при следующем посещении.',
+          fileQueueTitle: '📑 Очередь файлов',
+          clearQueueBtn: '🗑️ Очистить очередь',
+          fileQueueHint1: '💡 <strong>Порядок:</strong> Используйте кнопки ↑ ↓ для изменения порядка. Файлы будут объединены в один документ в этом порядке.',
+          fileQueueHint2: '🖱️ <strong>Загрузка:</strong> Перетащите файлы из проводника прямо на эту область или нажмите кнопку загрузки.',
+          addMoreFilesBtn: '➕ Добавить ещё файлы',
+          sortByNameBtn: '🔤 Сортировать по имени',
+          showFileNameLabel: '📄 Вставить имя файла в документ',
+          inputPanelTitle: '📥 Markdown (ввод)',
+          inputPlaceholder: 'Введите ваш Markdown здесь...',
+          previewPanelTitle: '👁️ Предпросмотр (как будет в Word)',
+          wordStylesLabel: '📊 Стили для Word',
+          hint: '💡 <strong>Инструкция:</strong> После конвертации нажмите «Копировать DOC в буфер обмена», затем вставьте в Microsoft Word (Ctrl+V). Форматирование, списки и таблицы сохранятся.',
+          footer: 'Работает полностью локально в вашем браузере • Данные не отправляются на сервер',
+          // Статус-бар и toast-сообщения
+          statusReady: '🎉 Готово к работе! Нажмите "Копировать DOC" для вставки в Word',
+          statusCleared: '🗑️ Очищено',
+          statusQueueCleared: '🗑️ Очередь файлов очищена',
+          statusConverting: '🔄 Конвертация...',
+          statusWordStylesOn: '📊 Стили для Word включены (изображения встраиваются в документ)',
+          statusWordStylesOff: '🔓 Чистый вывод Markdown-it',
+          toastSettingsReset: '🔄 Настройки сброшены к умолчаниям',
+          toastSettingsSaved: '💾 Настройки сохранены',
+          toastSettingsSaveError: '⚠️ Ошибка сохранения настроек',
+          toastSettingsApplied: '✅ Настройки применены',
+          toastNoFiles: '❌ Нет загруженных файлов',
+          toastOnlyMd: '⚠️ Поддерживаются только .md, .markdown, .txt файлы',
+          toastFilesDropped: '📂 Перетащено файлов:',
+          toastFilesLoaded: '📂 Загружено файлов:',
+          toastLoadError: '⚠️ Ошибка загрузки:',
+          toastFileMoved: '📑 Порядок файлов изменён',
+          toastFileRemoved: '🗑️ Файл удалён',
+          toastAllFilesRemoved: '🗑️ Все файлы удалены',
+          toastFilesSorted: '🔤 Файлы отсортированы по имени',
+          toastReady: '✅ Готово! Файлов объединено:',
+          toastWithNames: '(с именами)',
+          toastCopyWord: '📋 Скопировано! Вставьте в Word (Ctrl+V)',
+          toastCopyHtml: '📄 HTML скопирован в буфер обмена',
+          toastCopyFallback: '📋 Скопировано (совместимый режим)! Вставьте в Word',
+          toastCopyHtmlFallback: '📄 HTML скопирован (совместимый режим)',
+          toastCopyError: '❌ Не удалось скопировать. Попробуйте выделить текст вручную.',
+          toastCopyHtmlError: '❌ Не удалось скопировать HTML. Попробуйте выделить текст вручную.',
+          toastDownloaded: '💾 Файл скачан',
+          toastCleared: '🗑️ Очищено',
+          toastWordStylesOn: '📊 Стили для Word включены',
+          toastWordStylesOff: '🔓 Чистый вывод Markdown-it',
+          toastImagesEmbedded: '✅ Изображений встроено:',
+          toastImagesFail: '⚠️ Изображения не загружаются. Запустите локальный сервер',
+          toastConversionError: '❌ Ошибка конвертации:',
+          noFilesTitle: 'Нет загруженных файлов',
+          noFilesHint: 'Перетащите файлы сюда или нажмите кнопку загрузки',
+          fileMoveUp: 'Вверх',
+          fileMoveDown: 'Вниз',
+          fileRemove: 'Удалить файл',
+          charCount: 'символов',
+          wordCount: 'слов',
+          copiedLabel: '✅ Скопировано!',
+          // Настройки
+          settingsSaved: '💾 Настройки сохранены',
+          settingsSaveError: '⚠️ Ошибка сохранения настроек',
+          settingsApplied: '✅ Настройки применены',
+          settingsReset: '🔄 Настройки сброшены к умолчаниям',
+          // Статус конвертации
+          statusConvertSuccess: 'Нажмите "Копировать DOC" для вставки в Word',
+        },
+        en: {
+          title: '📝 Markdown → Word Converter (markdown-it)',
+          loadMdBtn: '📂 Load Markdown',
+          convertBtn: '🔄 Convert',
+          copyBtn: '📋 Copy DOC to clipboard',
+          copyHtmlBtn: '📄 Copy HTML to clipboard',
+          downloadBtn: '💾 Download as HTML',
+          clearBtn: '🗑️ Clear',
+          settingsTitle: '⚙️ Markdown-it Conversion Settings',
+          expandBtn: 'Expand',
+          collapseBtn: 'Collapse',
+          settingsGroup1Title: '📋 Basic Features',
+          optTasklists: 'Task lists (checkboxes)',
+          optTasklistsDesc: 'Support for checkboxes (- [x]) via markdown-it-task-lists plugin',
+          optStrikethrough: 'Strikethrough',
+          optStrikethroughDesc: 'Support for ~~strikethrough~~ via markdown-it-mark plugin',
+          optSimpleLineBreaks: 'Simple line breaks',
+          optSimpleLineBreaksDesc: 'Line break on single \\n (breaks option)',
+          optHtmlTags: 'Allow HTML tags',
+          optHtmlTagsDesc: 'Allows HTML tags like <br>, <b> etc. (html option)',
+          settingsGroup2Title: '🔗 Links',
+          optSimplifiedAutoLink: 'Auto-detect links',
+          optSimplifiedAutoLinkDesc: 'Automatic URL to link conversion (linkify option)',
+          optOpenLinksInNewWindow: 'Open links in new window',
+          optOpenLinksInNewWindowDesc: 'Add target="_blank" to links (post-processing)',
+          settingsGroup3Title: '✨ Additional Features',
+          optCompleteHTMLDocument: 'Complete HTML document',
+          optCompleteHTMLDocumentDesc: 'Wrap output in <html><body>...',
+          optSubscript: 'Subscript (H~2~O)',
+          optSubscriptDesc: 'Support for ~ syntax for subscript',
+          optSuperscript: 'Superscript (X^2^)',
+          optSuperscriptDesc: 'Support for ^ syntax for superscript',
+          optDeflist: 'Definition lists',
+          optDeflistDesc: 'Definition lists (term : description)',
+          optUnderline: 'Underline (++text++)',
+          optUnderlineDesc: 'Underlined text via ++',
+          optContainer: 'Containers (::: warning)',
+          optContainerDesc: 'Blocks with custom CSS classes',
+          optTypographer: 'Typographic replacements',
+          optTypographerDesc: 'Replaces quotes, dashes, ellipsis with typographic symbols (typographer option)',
+          optXhtmlOut: 'XHTML-style tags',
+          optXhtmlOutDesc: 'Output tags in XHTML style (e.g., <br />) (xhtmlOut option)',
+          optLangPrefix: 'Language prefix for code',
+          optLangPrefixDesc: 'CSS class prefix for code blocks (langPrefix option)',
+          optQuotes: 'Typography quotes',
+          optQuotesDesc: 'Four quote characters: double and single opening/closing (quotes option)',
+          applySettingsBtn: '✅ Apply settings',
+          resetSettingsBtn: '🔄 Reset to defaults',
+          saveSettingsBtn: '💾 Save settings',
+          settingsHint: '💡 Settings are applied automatically on change. Saved settings will be loaded on your next visit.',
+          fileQueueTitle: '📑 File Queue',
+          clearQueueBtn: '🗑️ Clear queue',
+          fileQueueHint1: '💡 <strong>Order:</strong> Use ↑ ↓ buttons to reorder. Files will be merged into one document in this order.',
+          fileQueueHint2: '🖱️ <strong>Upload:</strong> Drag & drop files from explorer onto this area or click the upload button.',
+          addMoreFilesBtn: '➕ Add more files',
+          sortByNameBtn: '🔤 Sort by name',
+          showFileNameLabel: '📄 Insert filename in document',
+          inputPanelTitle: '📥 Markdown (input)',
+          inputPlaceholder: 'Enter your Markdown here...',
+          previewPanelTitle: '👁️ Preview (as in Word)',
+          wordStylesLabel: '📊 Word styles',
+          hint: '💡 <strong>Instructions:</strong> After conversion, click "Copy DOC to clipboard", then paste into Microsoft Word (Ctrl+V). Formatting, lists and tables will be preserved.',
+          footer: 'Works completely locally in your browser • Data is not sent to any server',
+          // Status bar and toast messages
+          statusReady: '🎉 Ready! Click "Copy DOC" to paste into Word',
+          statusCleared: '🗑️ Cleared',
+          statusQueueCleared: '🗑️ File queue cleared',
+          statusConverting: '🔄 Converting...',
+          statusWordStylesOn: '📊 Word styles enabled (images are embedded in the document)',
+          statusWordStylesOff: '🔓 Clean Markdown-it output',
+          toastSettingsReset: '🔄 Settings reset to defaults',
+          toastSettingsSaved: '💾 Settings saved',
+          toastSettingsSaveError: '⚠️ Error saving settings',
+          toastSettingsApplied: '✅ Settings applied',
+          toastNoFiles: '❌ No files loaded',
+          toastOnlyMd: '⚠️ Only .md, .markdown, .txt files are supported',
+          toastFilesDropped: '📂 Files dropped:',
+          toastFilesLoaded: '📂 Files loaded:',
+          toastLoadError: '⚠️ Load error:',
+          toastFileMoved: '📑 File order changed',
+          toastFileRemoved: '🗑️ File removed',
+          toastAllFilesRemoved: '🗑️ All files removed',
+          toastFilesSorted: '🔤 Files sorted by name',
+          toastReady: '✅ Done! Files merged:',
+          toastWithNames: '(with names)',
+          toastCopyWord: '📋 Copied! Paste into Word (Ctrl+V)',
+          toastCopyHtml: '📄 HTML copied to clipboard',
+          toastCopyFallback: '📋 Copied (compatibility mode)! Paste into Word',
+          toastCopyHtmlFallback: '📄 HTML copied (compatibility mode)',
+          toastCopyError: '❌ Failed to copy. Try selecting text manually.',
+          toastCopyHtmlError: '❌ Failed to copy HTML. Try selecting text manually.',
+          toastDownloaded: '💾 File downloaded',
+          toastCleared: '🗑️ Cleared',
+          toastWordStylesOn: '📊 Word styles enabled',
+          toastWordStylesOff: '🔓 Clean Markdown-it output',
+          toastImagesEmbedded: '✅ Images embedded:',
+          toastImagesFail: '⚠️ Images cannot be loaded. Run a local server',
+          toastConversionError: '❌ Conversion error:',
+          noFilesTitle: 'No files loaded',
+          noFilesHint: 'Drag & drop files here or click the upload button',
+          fileMoveUp: 'Move up',
+          fileMoveDown: 'Move down',
+          fileRemove: 'Remove file',
+          charCount: 'characters',
+          wordCount: 'words',
+          copiedLabel: '✅ Copied!',
+          // Settings
+          settingsSaved: '💾 Settings saved',
+          settingsSaveError: '⚠️ Error saving settings',
+          settingsApplied: '✅ Settings applied',
+          settingsReset: '🔄 Settings reset to defaults',
+          // Conversion status
+          statusConvertSuccess: 'Click "Copy DOC" to paste into Word',
+        }
+      },
+      
+      // Получить перевод по ключу
+      t(key) {
+        return this.translations[this.currentLang][key] || this.translations['ru'][key] || key;
+      },
+      
+      // Переключить язык
+      setLang(lang) {
+        if (!this.translations[lang]) return;
+        this.currentLang = lang;
+        document.getElementById('htmlTag').setAttribute('lang', lang);
+        localStorage.setItem('md2wordLang', lang);
+        this.updateUI();
+      },
+      
+      // Обновить все элементы с data-i18n атрибутами
+      updateUI() {
+        // Обновляем элементы с data-i18n (textContent)
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+          const key = el.getAttribute('data-i18n');
+          el.textContent = this.t(key);
+        });
+        
+        // Обновляем элементы с data-i18n-placeholder (placeholder)
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+          const key = el.getAttribute('data-i18n-placeholder');
+          el.placeholder = this.t(key);
+        });
+        
+        // Обновляем элементы с data-i18n-char (счётчик символов)
+        document.querySelectorAll('[data-i18n-char]').forEach(el => {
+          const key = el.getAttribute('data-i18n-char');
+          el.setAttribute('data-i18n-char', key);
+        });
+        
+        // Обновляем элементы с data-i18n-word (счётчик слов)
+        document.querySelectorAll('[data-i18n-word]').forEach(el => {
+          const key = el.getAttribute('data-i18n-word');
+          el.setAttribute('data-i18n-word', key);
+        });
+        
+        // Обновляем заголовок страницы
+        document.title = this.t('title');
+        
+        // Обновляем кнопки сворачивания
+        this.updateToggleButtons();
+        
+        // Обновляем счётчики, если есть текст
+        if (els && els.input) {
+          this.updateStats();
+        }
+      },
+      
+      // Обновить текст кнопок сворачивания
+      updateToggleButtons() {
+        const settingsPanel = document.querySelector('.settings-panel');
+        const filesPanel = document.getElementById('multiFilePanel');
+        
+        if (settingsPanel) {
+          const isCollapsed = settingsPanel.classList.contains('collapsed');
+          const toggleBtn = document.getElementById('toggleSettingsBtn');
+          const icon = document.getElementById('toggleSettingsIcon');
+          if (toggleBtn && icon) {
+            icon.textContent = isCollapsed ? '▶' : '▼';
+            // Обновляем текст кнопки
+            const textSpan = toggleBtn.querySelector('span:not([id])');
+            if (textSpan) textSpan.textContent = isCollapsed ? this.t('expandBtn') : this.t('collapseBtn');
+          }
+        }
+        
+        if (filesPanel) {
+          const isCollapsed = filesPanel.classList.contains('collapsed');
+          const toggleBtn = document.getElementById('toggleFilesPanelBtn');
+          const icon = document.getElementById('toggleFilesPanelIcon');
+          if (toggleBtn && icon) {
+            icon.textContent = isCollapsed ? '▶' : '▼';
+            const textSpan = toggleBtn.querySelector('span:not([id])');
+            if (textSpan) textSpan.textContent = isCollapsed ? this.t('expandBtn') : this.t('collapseBtn');
+          }
+        }
+      },
+      
+      // Обновить счётчики с учётом языка (вызывает глобальную функцию)
+      updateStats() {
+        if (typeof updateStats === 'function') {
+          updateStats();
+        }
+      },
+      
+      // Загрузить сохранённый язык
+      loadSavedLang() {
+        try {
+          const saved = localStorage.getItem('md2wordLang');
+          if (saved && this.translations[saved]) {
+            this.currentLang = saved;
+            document.getElementById('langSelect').value = saved;
+          }
+        } catch (e) {}
+      }
+    };
+
     /* =============================================
        ИНИЦИАЛИЗАЦИЯ КОНВЕРТЕРА MARKDOWN-IT
        Создаём парсер Markdown → HTML с нужными опциями
@@ -1186,15 +1531,15 @@ ${html}
       currentSettings = { ...defaultSettings };
       updateUIFromSettings();
       updateConverter();
-      showToast('🔄 Настройки сброшены к умолчаниям', 'info');
+      showToast(i18n.t('toastSettingsReset'), 'info');
     }
 
     // Функция для сохранения настроек
     function saveSettings() {
       if (saveSettingsToStorage()) {
-        showToast('💾 Настройки сохранены', 'success');
+        showToast(i18n.t('toastSettingsSaved'), 'success');
       } else {
-        showToast('⚠️ Ошибка сохранения настроек', 'error');
+        showToast(i18n.t('toastSettingsSaveError'), 'error');
       }
     }
 
@@ -1202,7 +1547,7 @@ ${html}
     function applySettings() {
       applySettingsFromUI();
       updateConverter();
-      showToast('✅ Настройки применены', 'success');
+      showToast(i18n.t('toastSettingsApplied'), 'success');
     }
 
     // Инициализация настроек при загрузке страницы
@@ -1246,11 +1591,11 @@ ${html}
         if (isCollapsed) {
           panel.classList.remove('collapsed');
           icon.textContent = '▼';
-          document.getElementById('toggleSettingsBtn').innerHTML = '<span id="toggleSettingsIcon">▼</span> Свернуть';
+          document.getElementById('toggleSettingsBtn').innerHTML = `<span id="toggleSettingsIcon">▼</span> ${i18n.t('collapseBtn')}`;
         } else {
           panel.classList.add('collapsed');
           icon.textContent = '▶';
-          document.getElementById('toggleSettingsBtn').innerHTML = '<span id="toggleSettingsIcon">▶</span> Развернуть';
+          document.getElementById('toggleSettingsBtn').innerHTML = `<span id="toggleSettingsIcon">▶</span> ${i18n.t('expandBtn')}`;
         }
       });
 
@@ -1263,11 +1608,11 @@ ${html}
         if (isCollapsed) {
           panel.classList.remove('collapsed');
           icon.textContent = '▼';
-          document.getElementById('toggleFilesPanelBtn').innerHTML = '<span id="toggleFilesPanelIcon">▼</span> Свернуть';
+          document.getElementById('toggleFilesPanelBtn').innerHTML = `<span id="toggleFilesPanelIcon">▼</span> ${i18n.t('collapseBtn')}`;
         } else {
           panel.classList.add('collapsed');
           icon.textContent = '▶';
-          document.getElementById('toggleFilesPanelBtn').innerHTML = '<span id="toggleFilesPanelIcon">▶</span> Развернуть';
+          document.getElementById('toggleFilesPanelBtn').innerHTML = `<span id="toggleFilesPanelIcon">▶</span> ${i18n.t('expandBtn')}`;
         }
       });
     }
@@ -1557,7 +1902,7 @@ function processData(data) {
         });
 
         if (mdFiles.length === 0) {
-          showToast('⚠️ Поддерживаются только .md, .markdown, .txt файлы', 'error');
+          showToast(i18n.t('toastOnlyMd'), 'error');
           return;
         }
 
@@ -1578,14 +1923,14 @@ function processData(data) {
             // Когда все файлы загружены — перерисовываем список и конвертируем
             if (loadedCount + errorCount === mdFiles.length) {
               renderFileList();
-              showToast(`📂 Перетащено файлов: ${loadedCount}`, 'info');
+              showToast(`${i18n.t('toastFilesDropped')} ${loadedCount}`, 'info');
               convertAllFiles();
             }
           };
           reader.onerror = () => {
             errorCount++;
             if (loadedCount + errorCount === mdFiles.length) {
-              showToast(`⚠️ Ошибка загрузки: ${errorCount} файл(ов)`, 'error');
+              showToast(`${i18n.t('toastLoadError')} ${errorCount}`, 'error');
             }
           };
           reader.readAsText(file, 'UTF-8');
@@ -1628,14 +1973,14 @@ function processData(data) {
             // Все файлы прочитаны — обновляем список и конвертируем
             if (loadedCount + errorCount === files.length) {
               renderFileList();
-              showToast(`📂 Загружено файлов: ${loadedCount}`, 'info');
+              showToast(`${i18n.t('toastFilesLoaded')} ${loadedCount}`, 'info');
               convertAllFiles();
             }
           };
           reader.onerror = () => {
             errorCount++;
             if (loadedCount + errorCount === files.length) {
-              showToast(`⚠️ Ошибка загрузки: ${errorCount} файл(ов)`, 'error');
+              showToast(`${i18n.t('toastLoadError')} ${errorCount}`, 'error');
             }
           };
           reader.readAsText(file, 'UTF-8');
@@ -1669,8 +2014,8 @@ function processData(data) {
         fileList.innerHTML = `
           <div style="padding: 30px 20px; text-align: center; color: #888;">
             <div style="font-size: 48px; margin-bottom: 10px;">📂</div>
-            <div style="font-size: 15px; font-weight: 500; margin-bottom: 5px;">Нет загруженных файлов</div>
-            <div style="font-size: 13px;">Перетащите файлы сюда или нажмите кнопку загрузки</div>
+            <div style="font-size: 15px; font-weight: 500; margin-bottom: 5px;">${i18n.t('noFilesTitle')}</div>
+            <div style="font-size: 13px;">${i18n.t('noFilesHint')}</div>
           </div>
         `;
         return;
@@ -1689,9 +2034,9 @@ function processData(data) {
             <div class="file-size">${formatFileSize(file.size)}</div>
           </div>
           <div class="file-controls">
-            <button class="file-move-btn" data-index="${index}" data-direction="up" title="Вверх" ${index === 0 ? 'disabled' : ''}>↑</button>
-            <button class="file-move-btn" data-index="${index}" data-direction="down" title="Вниз" ${index === uploadedFiles.length - 1 ? 'disabled' : ''}>↓</button>
-            <button class="file-remove" data-index="${index}" title="Удалить файл">✕</button>
+            <button class="file-move-btn" data-index="${index}" data-direction="up" title="${i18n.t('fileMoveUp')}" ${index === 0 ? 'disabled' : ''}>↑</button>
+            <button class="file-move-btn" data-index="${index}" data-direction="down" title="${i18n.t('fileMoveDown')}" ${index === uploadedFiles.length - 1 ? 'disabled' : ''}>↓</button>
+            <button class="file-remove" data-index="${index}" title="${i18n.t('fileRemove')}">✕</button>
           </div>
         `;
 
@@ -1713,7 +2058,7 @@ function processData(data) {
           renderFileList();
           // Если файлов больше нет — очищаем всё
           if (uploadedFiles.length > 0) {
-            showToast('🗑️ Файл удалён', 'info');
+            showToast(i18n.t('toastFileRemoved'), 'info');
             convertAllFiles();
           } else {
             els.input.value = '';
@@ -1723,7 +2068,7 @@ function processData(data) {
             els.downloadBtn.disabled = true;
             updateStats();
             showStatus('');
-            showToast('🗑️ Все файлы удалнены', 'info');
+            showToast(i18n.t('toastAllFilesRemoved'), 'info');
           }
         });
 
@@ -1750,7 +2095,7 @@ function processData(data) {
       uploadedFiles[newIndex] = temp;
 
       renderFileList();
-      showToast('📑 Порядок файлов изменён', 'info');
+      showToast(i18n.t('toastFileMoved'), 'info');
       convertAllFiles(); // Авто-конвертация после изменения порядка
     }
 
@@ -1770,9 +2115,10 @@ function processData(data) {
        с учётом русской локали
        ============================================= */
     function sortFilesByName() {
-      uploadedFiles.sort((a, b) => a.name.localeCompare(b.name, 'ru'));
+      const locale = i18n.currentLang === 'ru' ? 'ru' : 'en';
+      uploadedFiles.sort((a, b) => a.name.localeCompare(b.name, locale));
       renderFileList();
-      showToast('🔤 Файлы отсортированы по имени', 'info');
+      showToast(i18n.t('toastFilesSorted'), 'info');
       convertAllFiles(); // Авто-конвертация после сортировки
     }
 
@@ -1785,12 +2131,12 @@ function processData(data) {
        ============================================= */
     function convertAllFiles() {
       if (uploadedFiles.length === 0) {
-        showToast('❌ Нет загруженных файлов', 'error');
+        showToast(i18n.t('toastNoFiles'), 'error');
         showStatus('');
         return;
       }
 
-      showStatus('🔄 Конвертация...', 'info');
+      showStatus(i18n.t('statusConverting'), 'info');
 
       // Проверяем, нужно ли показывать имена файлов
       const showFileName = document.getElementById('showFileNameCheckbox').checked;
@@ -1817,10 +2163,10 @@ function processData(data) {
       // Запускаем конвертацию
       convertMarkdown().then(() => {
         const fileCountMsg = showFileName
-          ? `✅ Готово! Файлов объединено: ${uploadedFiles.length} (с именами)`
-          : `✅ Готово! Файлов объединено: ${uploadedFiles.length}`;
+          ? `${i18n.t('toastReady')} ${uploadedFiles.length} ${i18n.t('toastWithNames')}`
+          : `${i18n.t('toastReady')} ${uploadedFiles.length}`;
         showToast(fileCountMsg, 'success');
-        showStatus(`${fileCountMsg} | Нажмите "Копировать DOC" для вставки в Word`, 'success');
+        showStatus(`${fileCountMsg} | ${i18n.t('statusConvertSuccess')}`, 'success');
       });
     }
 
@@ -1857,8 +2203,8 @@ function processData(data) {
         return html;
       } catch (err) {
         console.error('Conversion error:', err);
-        showToast('❌ Ошибка конвертации: ' + err.message, 'error');
-        showStatus('❌ Ошибка конвертации: ' + err.message, 'error');
+        showToast(i18n.t('toastConversionError') + ' ' + err.message, 'error');
+        showStatus(i18n.t('toastConversionError') + ' ' + err.message, 'error');
         return '';
       }
     }
@@ -1919,9 +2265,9 @@ function processData(data) {
 
       // Показываем статус загрузки
       if (failCount > 0 && successCount === 0) {
-        showToast('⚠️ Изображения не загружаются. Запустите локальный сервер', 'error');
+        showToast(i18n.t('toastImagesFail'), 'error');
       } else if (successCount > 0) {
-        showToast(`✅ Изображений встроено: ${successCount}`, 'success');
+        showToast(`${i18n.t('toastImagesEmbedded')} ${successCount}`, 'success');
       }
 
       return temp.innerHTML;
@@ -2193,11 +2539,11 @@ function processData(data) {
        ============================================= */
     function updateStats() {
       const text = els.input.value;
-      els.charCount.textContent = `${text.length} символов`;
+      els.charCount.textContent = `${text.length} ${i18n.t('charCount')}`;
 
       // Считаем слова: разбиваем по пробелам, отфильтроввем пустые
       const words = text.trim().split(/\s+/).filter(w => w.length > 0).length;
-      els.wordCount.textContent = `${words} слов`;
+      els.wordCount.textContent = `${words} ${i18n.t('wordCount')}`;
     }
 
     /* =============================================
@@ -2222,12 +2568,12 @@ function processData(data) {
         });
 
         await navigator.clipboard.write([clipboardItem]);
-        showToast('📋 Скопировано! Вставьте в Word (Ctrl+V)', 'success');
+        showToast(i18n.t('toastCopyWord'), 'success');
 
         // Визуальный эффект на кнопке
         const btn = els.copyBtn;
         const originalText = btn.innerHTML;
-        btn.innerHTML = '✅ Скопировано!';
+        btn.innerHTML = i18n.t('copiedLabel');
         setTimeout(() => btn.innerHTML = originalText, 2000);
 
       } catch (err) {
@@ -2252,12 +2598,12 @@ function processData(data) {
         });
 
         await navigator.clipboard.write([clipboardItem]);
-        showToast('📄 HTML скопирован в буфер обмена', 'success');
+        showToast(i18n.t('toastCopyHtml'), 'success');
 
         // Визуальный эффект
         const btn = els.copyHtmlBtn;
         const originalText = btn.innerHTML;
-        btn.innerHTML = '✅ Скопировано!';
+        btn.innerHTML = i18n.t('copiedLabel');
         setTimeout(() => btn.innerHTML = originalText, 2000);
 
       } catch (err) {
@@ -2288,9 +2634,9 @@ function processData(data) {
 
       try {
         document.execCommand('copy');
-        showToast('📄 HTML скопирован (совместимый режим)', 'success');
+        showToast(i18n.t('toastCopyHtmlFallback'), 'success');
       } catch (e) {
-        showToast('❌ Не удалось скопировать HTML. Попробуйте выделить текст вручную.', 'error');
+        showToast(i18n.t('toastCopyHtmlError'), 'error');
       } finally {
         document.body.removeChild(temp);
         sel.removeAllRanges();
@@ -2317,9 +2663,9 @@ function processData(data) {
 
       try {
         document.execCommand('copy');
-        showToast('📋 Скопировано (совместимый режим)! Вставьте в Word', 'success');
+        showToast(i18n.t('toastCopyFallback'), 'success');
       } catch (e) {
-        showToast('❌ Не удалось скопировать. Попробуйте выделить текст вручную.', 'error');
+        showToast(i18n.t('toastCopyError'), 'error');
       } finally {
         document.body.removeChild(temp);
         sel.removeAllRanges();
@@ -2376,7 +2722,7 @@ ${els.preview.innerHTML}
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
 
-      showToast('💾 Файл скачан', 'success');
+      showToast(i18n.t('toastDownloaded'), 'success');
     }
 
     /* =============================================
@@ -2393,8 +2739,8 @@ ${els.preview.innerHTML}
       uploadedFiles = [];
       renderFileList();
       updateStats();
-      showStatus('🗑️ Очищено', 'info');
-      showToast('🗑️ Очищено', 'info');
+      showStatus(i18n.t('statusCleared'), 'info');
+      showToast(i18n.t('toastCleared'), 'info');
     }
 
     /* =============================================
@@ -2469,8 +2815,8 @@ ${els.preview.innerHTML}
       els.copyHtmlBtn.disabled = true;
       els.downloadBtn.disabled = true;
       updateStats();
-      showStatus('🗑️ Очередь файлов очищена', 'info');
-      showToast('🗑️ Очередь файлов очищена', 'info');
+      showStatus(i18n.t('statusQueueCleared'), 'info');
+      showToast(i18n.t('statusQueueCleared'), 'info');
     });
 
     // Чекбокс «Вставить имя файла в документ» — пере-конвертирует при изменении
@@ -2507,11 +2853,11 @@ ${els.preview.innerHTML}
     els.styleToggle.addEventListener('change', () => {
       convertMarkdown();
       if (els.styleToggle.checked) {
-        showToast('📊 Стили для Word включены', 'info');
-        showStatus('📊 Стили для Word включены (изображения встраиваются в документ)', 'info');
+        showToast(i18n.t('toastWordStylesOn'), 'info');
+        showStatus(i18n.t('statusWordStylesOn'), 'info');
       } else {
-        showToast('🔓 Чистый вывод Markdown-it', 'info');
-        showStatus('🔓 Чистый вывод Markdown-it', 'info');
+        showToast(i18n.t('toastWordStylesOff'), 'info');
+        showStatus(i18n.t('statusWordStylesOff'), 'info');
       }
     });
 
@@ -2520,13 +2866,25 @@ ${els.preview.innerHTML}
        Выполняется после готовности DOM
        ============================================= */
     window.addEventListener('DOMContentLoaded', () => {
-      // Инициализация настроек Showdown
+      // Инициализация языка
+      i18n.loadSavedLang();
+      i18n.updateUI();
+      
+      // Обработчик переключателя языка
+      document.getElementById('langSelect').addEventListener('change', (e) => {
+        i18n.setLang(e.target.value);
+        // Обновляем счётчики и статус
+        updateStats();
+        showStatus(i18n.t('statusReady'), 'info');
+      });
+      
+      // Инициализация настроек
       initSettings();
       
       renderFileList();              // Показываем пустой список файлов
       els.input.value = defaultExample; // Загружаем пример Markdown
       convertMarkdown();             // Сразу конвертируем
-      showStatus('🎉 Готово к работе! Нажмите "Копировать DOC" для вставки в Word', 'info');
+      showStatus(i18n.t('statusReady'), 'info');
     });
   </script>
 </body>
