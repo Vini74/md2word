@@ -144,6 +144,14 @@
                 <input type="checkbox" id="showHidden">
                 Показывать скрытые файлы
             </label>
+            <label>
+                <input type="checkbox" id="noExt">
+                Без расширений
+            </label>
+            <label>
+                <input type="checkbox" id="noPseudo">
+                Без псевдографики
+            </label>
         </div>
 
         <div class="controls">
@@ -155,12 +163,35 @@
     </div>
 
     <script>
+        // Natural sort: сравнивает числа внутри строк по значению, остальное — лексикографически
+        function naturalCompare(a, b) {
+            const re = /(\d+)|(\D+)/g;
+            const partsA = a.match(re) || [a];
+            const partsB = b.match(re) || [b];
+
+            for (let i = 0; i < Math.min(partsA.length, partsB.length); i++) {
+                const isNumA = /^\d+$/.test(partsA[i]);
+                const isNumB = /^\d+$/.test(partsB[i]);
+
+                if (isNumA && isNumB) {
+                    const diff = parseInt(partsA[i], 10) - parseInt(partsB[i], 10);
+                    if (diff !== 0) return diff;
+                } else {
+                    const cmp = partsA[i].localeCompare(partsB[i]);
+                    if (cmp !== 0) return cmp;
+                }
+            }
+            return partsA.length - partsB.length;
+        }
+
         const selectFolderBtn = document.getElementById('selectFolder');
         const copyTreeBtn = document.getElementById('copyTree');
         const folderPathEl = document.getElementById('folderPath');
         const treeOutput = document.getElementById('treeOutput');
         const showFilesCheckbox = document.getElementById('showFiles');
         const showHiddenCheckbox = document.getElementById('showHidden');
+        const noExtCheckbox = document.getElementById('noExt');
+        const noPseudoCheckbox = document.getElementById('noPseudo');
         const statusEl = document.getElementById('status');
 
         let currentHandle = null;
@@ -278,13 +309,15 @@
         async function buildTree(dirHandle) {
             const showFiles = showFilesCheckbox.checked;
             const showHidden = showHiddenCheckbox.checked;
+            const noExt = noExtCheckbox.checked;
+            const noPseudo = noPseudoCheckbox.checked;
             
-            const tree = await readDirectory(dirHandle, '', showFiles, showHidden);
+            const tree = await readDirectory(dirHandle, '', showFiles, showHidden, noExt, noPseudo);
             treeOutput.textContent = tree;
         }
 
         // Рекурсивное чтение директории
-        async function readDirectory(dirHandle, prefix, showFiles, showHidden) {
+        async function readDirectory(dirHandle, prefix, showFiles, showHidden, noExt, noPseudo) {
             let result = '';
             const entries = [];
             
@@ -298,25 +331,42 @@
                 entries.push(entry);
             }
             
-            // Сортируем: папки primero, потом файлы
+            // Сортируем: папки primero, потом файлы (natural sort)
             entries.sort((a, b) => {
                 if (a.kind !== b.kind) {
                     return a.kind === 'directory' ? -1 : 1;
                 }
-                return a.name.localeCompare(b.name);
+                return naturalCompare(a.name, b.name);
             });
 
             for (let i = 0; i < entries.length; i++) {
                 const entry = entries[i];
                 const isLast = i === entries.length - 1;
-                const connector = isLast ? '└── ' : '├── ';
                 
-                result += prefix + connector + entry.name + '\n';
+                // Отображаемое имя: без расширения если опция включена
+                let displayName = entry.name;
+                if (noExt && entry.kind === 'file') {
+                    const dotIdx = displayName.lastIndexOf('.');
+                    if (dotIdx > 0) {
+                        displayName = displayName.substring(0, dotIdx);
+                    }
+                }
+                
+                // Псевдографика или отступы пробелами
+                let connector, childPrefix;
+                if (noPseudo) {
+                    connector = isLast ? '\\-- ' : '|-- ';
+                    childPrefix = prefix + (isLast ? '    ' : '|   ');
+                } else {
+                    connector = isLast ? '└── ' : '├── ';
+                    childPrefix = prefix + (isLast ? '    ' : '│   ');
+                }
+                
+                result += prefix + connector + displayName + '\n';
                 
                 if (entry.kind === 'directory') {
-                    const childPrefix = prefix + (isLast ? '    ' : '│   ');
                     try {
-                        result += await readDirectory(entry, childPrefix, showFiles, showHidden);
+                        result += await readDirectory(entry, childPrefix, showFiles, showHidden, noExt, noPseudo);
                     } catch (err) {
                         result += childPrefix + '[Нет доступа]\n';
                     }
@@ -344,17 +394,16 @@
         });
 
         // Перестроение при изменении настроек
-        showFilesCheckbox.addEventListener('change', () => {
+        function rebuildTree() {
             if (currentHandle) {
                 buildTree(currentHandle);
             }
-        });
+        }
 
-        showHiddenCheckbox.addEventListener('change', () => {
-            if (currentHandle) {
-                buildTree(currentHandle);
-            }
-        });
+        showFilesCheckbox.addEventListener('change', rebuildTree);
+        showHiddenCheckbox.addEventListener('change', rebuildTree);
+        noExtCheckbox.addEventListener('change', rebuildTree);
+        noPseudoCheckbox.addEventListener('change', rebuildTree);
     </script>
 </body>
 </html>
