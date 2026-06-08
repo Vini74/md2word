@@ -1,0 +1,30 @@
+# Системные файлы
+Thumbs.db
+Desktop.ini
+.DS_Store
+*.swp
+*.swo
+*~
+
+# Редакторы и IDE
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Логи и временные файлы
+*.log
+*.tmp
+*.temp
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Папка с библиотеками (если используются локально)
+lib/
+
+# Gigacode
+.gigacode/
